@@ -13,8 +13,18 @@ Clone the repository and navigate to its root folder. Install Node/Express. This
 ## Deployment
 
 Navigate to the root folder of the repo and type:
-````
-node app
+````Bash
+# Ensure your dependencies are up to date
+yarn install
+
+# To run development mode
+npm start
+
+# To build for production
+npm run build
+
+# To run for production
+npm run prod
 ````
 
 ## Authors
