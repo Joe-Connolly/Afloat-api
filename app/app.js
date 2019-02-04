@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import requestIp from 'request-ip';
 import routes from './rest';
 import chalk from 'chalk';
+import mongoose from './mongoose';
 
 /**
  * @name init
@@ -40,6 +41,8 @@ app.use('/api', routes);
  */
 const server = app.listen(Number(PORT), HOST, () => {
   console.log(chalk.hex('#009688')(` [*] Host: http://${HOST}:${PORT}/.`));
+  mongoose.connection.once('open', () => console.log(chalk.hex('#009688')(' [*] Mongo: Connection Succeeded.')));
+  mongoose.connection.on('error', err => console.error(err));
 });
 
 export default server;
