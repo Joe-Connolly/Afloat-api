@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+// TODO: move secret to env var
 const SECRET = '18o726312834ylhwqlekhry239847';
 
 const UserSchema = new Schema({
@@ -35,7 +36,6 @@ UserSchema.methods.comparePassword = function comparePassword(candidatePassword,
 };
 
 // Adapted from: https://medium.freecodecamp.org/learn-how-to-handle-authentication-with-node-using-passport-js-4a56ed18e81e
-// TODO: move secret to env var
 UserSchema.methods.generateJWT = function generateJWT() {
   const today = new Date();
   const expirationDate = new Date(today);

@@ -57,10 +57,11 @@ export const signin = (req, res, next) => {
     }
 
     if (passportUser) {
-      const u = passportUser;
-      u.token = passportUser.generateJWT();
-
-      return res.json({ user: u.toAuthJSON() });
+      const userObject = passportUser;
+      userObject.token = passportUser.generateJWT();
+        
+      // Send token
+      return res.json({ user: userObject.toAuthJSON() });
     }
 
     res.send(400);
