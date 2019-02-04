@@ -4,7 +4,11 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app/app.js --exec babel-node",
+    "build": "babel -d ./dist src -s",
+    "prod": "NODE_ENV=production forever -o out.log -e err.log start ./dist/api.js",
+    "lint": "eslint 'src/**/*.js'"
   },
   "repository": {
     "type": "git",
@@ -14,10 +18,30 @@
     "express": "*",
     "body-parser": "*"
   },
+  "devDependencies": {
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.3",
+    "babel-eslint": "10.0.1",
+    "babel-jest": "23.6.0",
+    "babel-plugin-root-import": "6.1.0",
+    "babel-preset-env": "1.7.0",
+    "babel-preset-stage-0": "6.24.1",
+    "codecov": "3.1.0",
+    "cross-env": "5.2.0",
+    "eslint": "5.12.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-import-resolver-babel-plugin-root-import": "1.1.1",
+    "eslint-plugin-import": "2.14.0",
+    "nodemon": "1.18.9",
+    "supertest": "3.3.0"
+  },
   "author": "Quantweb",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dartmouth-cs98/19w-quantweb-backend/issues"
   },
-  "homepage": "https://github.com/dartmouth-cs98/19w-quantweb-backend#readme"
+  "homepage": "https://github.com/dartmouth-cs98/19w-quantweb-backend#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
 }
