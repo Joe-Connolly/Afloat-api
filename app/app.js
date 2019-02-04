@@ -4,9 +4,14 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import requestIp from 'request-ip';
-import routes from './rest';
 import chalk from 'chalk';
+import session from 'express-session';
+
+import routes from './rest';
 import mongoose from './mongoose';
+
+// TODO: Use environment variable
+const SECRET = '18o726312834ylhwqlekhry239847';
 
 /**
  * @name init
@@ -29,7 +34,7 @@ app.set('trust proxy', true);
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use(session({ secret: SECRET, cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
 /**
  * @name REST
  */
