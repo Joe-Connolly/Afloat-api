@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import requestIp from 'request-ip';
 import chalk from 'chalk';
 import session from 'express-session';
+import passport from './passport';
 
 import routes from './rest';
 import mongoose from './mongoose';
@@ -35,6 +36,8 @@ app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: SECRET, cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
 /**
  * @name REST
  */
