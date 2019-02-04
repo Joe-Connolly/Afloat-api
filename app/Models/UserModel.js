@@ -1,10 +1,11 @@
 import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import * as ENV from '../env';
 
-// TODO: move secret to env var
-const SECRET = '18o726312834ylhwqlekhry239847';
+const { SECRET } = ENV;
 
+// Base user schema
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
   fullname: String,
@@ -15,6 +16,7 @@ UserSchema.set('toJSON', {
   virtuals: true,
 });
 
+// Pre-save hook to salt and hash password updates
 UserSchema.pre('save', function beforeUserSave(next) {
   const user = this;
   if (!user.isModified('password')) return next();
@@ -25,6 +27,7 @@ UserSchema.pre('save', function beforeUserSave(next) {
   });
 });
 
+// Schema method to compare/validate hashed password
 UserSchema.methods.comparePassword = function comparePassword(candidatePassword, callback) {
   bcrypt.compare(candidatePassword, this.password, (error, result) => {
     if (error) {
@@ -35,11 +38,12 @@ UserSchema.methods.comparePassword = function comparePassword(candidatePassword,
   });
 };
 
+// Schema method to generate a json web token for auth
 // Adapted from: https://medium.freecodecamp.org/learn-how-to-handle-authentication-with-node-using-passport-js-4a56ed18e81e
 UserSchema.methods.generateJWT = function generateJWT() {
   const today = new Date();
   const expirationDate = new Date(today);
-  expirationDate.setDate(today.getDate() + 60);
+  expirationDate.setDate(today.getDate() + 90);
 
   return jwt.sign({
     email: this.email,
@@ -48,6 +52,7 @@ UserSchema.methods.generateJWT = function generateJWT() {
   }, SECRET);
 };
 
+// Schema method to return auth JSON body (including auth token)
 UserSchema.methods.toAuthJSON = function toAuthJSON() {
   return {
     _id: this._id,
@@ -56,6 +61,7 @@ UserSchema.methods.toAuthJSON = function toAuthJSON() {
   };
 };
 
+// Schema method to get JSON representation of user
 UserSchema.methods.getUser = function getUser() {
   return {
     username: this.username,
@@ -63,7 +69,7 @@ UserSchema.methods.getUser = function getUser() {
   };
 };
 
-// create model class
+// Create model class
 const User = mongoose.model('User', UserSchema);
 
 export default User;

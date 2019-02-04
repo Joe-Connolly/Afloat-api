@@ -8,17 +8,13 @@ import chalk from 'chalk';
 import session from 'express-session';
 import passport from './core/passport';
 
+import { SECRET, HOST, PORT } from './env';
 import routes from './core/rest';
 import mongoose from './core/mongoose';
-
-// TODO: Use environment variable
-const SECRET = '18o726312834ylhwqlekhry239847';
 
 /**
  * @name init
  */
-const HOST = '0.0.0.0';
-const PORT = 3000;
 const app = express();
 
 /**
@@ -27,19 +23,17 @@ const app = express();
 app.use(compression());
 app.use(helmet());
 app.use(cors());
-
-// Get IPs
 app.use(requestIp.mw());
 app.set('trust proxy', true);
-
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: SECRET, cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+
 /**
- * @name REST
+ * @name REST-entry-point
  */
 app.use('/api', routes);
 

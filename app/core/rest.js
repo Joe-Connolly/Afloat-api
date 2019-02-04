@@ -14,4 +14,16 @@ router.get('/', (req, res) => {
 router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
+// Sample protected route
+router.get('/testProtectedRoute', auth.required, (req, res) => {
+  // We can use these to query the DB for records for a user
+  const userEmail = req.payload.email;
+  const userId = req.payload.id;
+
+  // Do protected things here for the userId
+
+  // Send result
+  res.json({ userEmail, userId });
+});
+
 export default router;

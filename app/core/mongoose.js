@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
+import * as ENV from '../env';
 
-// TODO: Use environment variable
-const MONGODB_URI = 'mongodb://quantweb:spacejam98@ds221095.mlab.com:21095/quantweb';
+const { MONGODB_URI } = ENV;
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true });
 mongoose.Promise = global.Promise;

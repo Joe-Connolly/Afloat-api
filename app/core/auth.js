@@ -1,4 +1,7 @@
 const jwt = require('express-jwt');
+import * as ENV from '../env';
+
+const { SECRET } = ENV;
 
 // Adapted from https://medium.freecodecamp.org/learn-how-to-handle-authentication-with-node-using-passport-js-4a56ed18e81e
 const getTokenFromHeaders = (req) => {
@@ -12,12 +15,12 @@ const getTokenFromHeaders = (req) => {
 
 const auth = {
   required: jwt({
-    secret: 'secret',
+    secret: SECRET,
     userProperty: 'payload',
     getToken: getTokenFromHeaders,
   }),
   optional: jwt({
-    secret: 'secret',
+    secret: SECRET,
     userProperty: 'payload',
     getToken: getTokenFromHeaders,
     credentialsRequired: false,
