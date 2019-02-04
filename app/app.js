@@ -6,10 +6,10 @@ import morgan from 'morgan';
 import requestIp from 'request-ip';
 import chalk from 'chalk';
 import session from 'express-session';
-import passport from './passport';
+import passport from './core/passport';
 
-import routes from './rest';
-import mongoose from './mongoose';
+import routes from './core/rest';
+import mongoose from './core/mongoose';
 
 // TODO: Use environment variable
 const SECRET = '18o726312834ylhwqlekhry239847';

@@ -2,7 +2,7 @@ import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 
-import User from './Models/UserModel';
+import User from '../Models/UserModel';
 
 const SECRET = '18o726312834ylhwqlekhry239847';
 const localOptions = { usernameField: 'email', passwordField: 'password' };

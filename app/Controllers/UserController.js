@@ -1,4 +1,4 @@
-import passport from '../passport';
+import passport from '../core/passport';
 import User from '../Models/UserModel';
 
 export const signup = (req, res, next) => {
