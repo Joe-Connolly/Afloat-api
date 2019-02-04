@@ -1,0 +1,23 @@
+{
+  "name": "19w-quantweb-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dartmouth-cs98/19w-quantweb-backend.git"
+  },
+  "dependcies": {
+    "express": "*",
+    "body-parser": "*"
+  },
+  "author": "Quantweb",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dartmouth-cs98/19w-quantweb-backend/issues"
+  },
+  "homepage": "https://github.com/dartmouth-cs98/19w-quantweb-backend#readme"
+}
