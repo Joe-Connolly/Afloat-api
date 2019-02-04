@@ -1,9 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-// email: unique identifier
-// fullname: could do first + last, but just one object for now
-// password: gets hashed with bcryptjs
+
+const SECRET = '18o726312834ylhwqlekhry239847';
+
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
   fullname: String,
@@ -35,6 +35,7 @@ UserSchema.methods.comparePassword = function comparePassword(candidatePassword,
 };
 
 // Adapted from: https://medium.freecodecamp.org/learn-how-to-handle-authentication-with-node-using-passport-js-4a56ed18e81e
+// TODO: move secret to env var
 UserSchema.methods.generateJWT = function generateJWT() {
   const today = new Date();
   const expirationDate = new Date(today);
@@ -44,7 +45,7 @@ UserSchema.methods.generateJWT = function generateJWT() {
     email: this.email,
     id: this._id,
     exp: parseInt(expirationDate.getTime() / 1000, 10),
-  }, 'secret');
+  }, SECRET);
 };
 
 UserSchema.methods.toAuthJSON = function toAuthJSON() {
