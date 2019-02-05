@@ -1,19 +1,15 @@
 #! /bin/bash
 
-# Create logs directory if it doesnt exist
-# mkdir logs/
+# Update codebase
+git pull
+npm install
+
+# Rebuild server
+npm run build
 
 # Move logs to log file with timestamp as filename
 # mv out.log logs/$(date +%F-%T).log
 
-# Update codebase
-git pull
-yarn install
-
-# Rebuild server
-npm run build
-killall node
-npm run prod
-
+echo "DONE" 
 # Show status
-forever list
+# forever list
