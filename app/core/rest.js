@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import verifyGithubWebhook from 'verify-github-webhook';
 import crypto from 'crypto';
+import shell from 'shelljs';
 import auth from './auth';
 import * as UserController from '../Controllers/UserController';
 import { SECRET } from '../env';
+
 const router = Router();
 
 
@@ -22,10 +24,10 @@ router.post('/getGitUpdate', (req, res) => {
   hmac.update(JSON.stringify(payload));
   const calculatedSignature = `sha1=${hmac.digest('hex')}`;
 
-  if (req.headers['x-hub-signature'] === calculatedSignature && payload['action'] === 'closed') {
-    console.log("Restarting server...");
-    
+  if (req.headers['x-hub-signature'] === calculatedSignature && payload.action === 'closed') {
+    console.log('Restarting server AND IT WORKS...');
     res.send('success');
+    shell.exec('./restartServer');
   } else {
     res.send('failure');
   }
