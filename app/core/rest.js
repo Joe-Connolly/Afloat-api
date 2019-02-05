@@ -32,8 +32,9 @@ router.post('/getGitUpdate', (req, res) => {
 
   if (req.headers['x-hub-signature'] === calculatedSignature && payload.action === 'closed') {
     console.log('Restarting server...');
-    res.send('success');
-    shell.exec('./updateCode');
+    if (shell.exec('./updateCode').code === 0) {
+      res.send('Success');
+    }
   } else {
     res.send('failure');
   }
