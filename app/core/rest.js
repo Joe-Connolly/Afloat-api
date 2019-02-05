@@ -28,10 +28,18 @@ router.post('/getGitUpdate', (req, res) => {
   const payload = JSON.stringify(req.body.payload);
   const secret = 'asdfkj98123792134ASDJKH';
 
+  console.log(`Signature: ${signature}`);
+  console.log(`payload: ${payload}`);
+  console.log('secret: asdfkj98123792134ASDJKH');
+  console.log(`action: ${req.body.payload.action}`);
+  console.log(`Test 0: ${verifyGithubWebhook(signature, req.body.payload, secret)}`)
+  console.log(`Test 1: ${verifyGithubWebhook(signature, payload, secret)}`)
+
+
   // console.log(JSON.stringify(req.body));
-  if (req.body.payload.action === 'closed' && verifyGithubWebhook(signature, payload, secret)) {
-    console.log('Git pull and reset the server');
-  }
+  // if (req.body.payload.action === 'closed' && verifyGithubWebhook(signature, payload, secret)) {
+  //   console.log('Git pull and reset the server');
+  // }
   res.send('success');
 });
 
