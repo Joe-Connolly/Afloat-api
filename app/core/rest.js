@@ -17,7 +17,7 @@ router.post('/signin', auth.optional, UserController.signin);
 
 // asdfkj98123792134ASDJKH
 router.post('/getGitUpdate', (req, res) => {
-  // console.log(req.body);
+  console.log(req.body);
   // console.log();
   // console.log();
   // console.log(req.headers);
