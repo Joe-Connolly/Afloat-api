@@ -14,3 +14,6 @@ yarn install
 npm run build
 killall node
 npm run prod
+
+# Show status
+forever list
