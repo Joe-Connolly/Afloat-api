@@ -14,8 +14,17 @@ router.get('/', (req, res) => {
 router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
+// asdfkj98123792134ASDJKH
 router.post('/getGitUpdate', (req, res) => {
-  console.log(JSON.stringify(req.body.payload));
+  console.log(req.headers);
+  if (req.body.payload.action === 'closed') {
+    console.log('Git pull and reset the server');
+  }
+});
+
+// Test restart
+router.get('/lol', (req, res) => {
+  res.send("you win!");
 })
 
 // Sample protected route
