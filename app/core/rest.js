@@ -25,7 +25,7 @@ router.post('/getGitUpdate', (req, res) => {
   // console.log();
   const payload = req.body;
 
-  const secret = 'asdfkj98123792134ASDJKH';
+  const secret = 'asdfkj98123792134ASDJK';
   const hmac = crypto.createHmac('sha1', secret);
   hmac.update(JSON.stringify(payload));
   const calculatedSignature = `sha1=${hmac.digest('hex')}`;
