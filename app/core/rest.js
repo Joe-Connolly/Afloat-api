@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import verifyGithubWebhook from "verify-github-webhook";
 
 import auth from './auth';
 import * as UserController from '../Controllers/UserController';
@@ -19,7 +20,7 @@ router.post('/getGitUpdate', (req, res) => {
   console.log(req.body);
   console.log();
   console.log();
-  console.log(JSON.stringify(req.body));
+  console.log(JSON.stringify(req.body);
   if (req.body.payload.action === 'closed') {
     console.log('Git pull and reset the server');
   }
