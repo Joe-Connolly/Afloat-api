@@ -1,0 +1,14 @@
+#! /bin/bash
+
+# Update codebase
+git pull
+npm install
+
+# Move logs to log file with timestamp as filename
+cp out.log logs/$(date +%F-%T)_out.log
+cp err.log logs/$(date +%F-%T)_err.log
+echo -n "" > out.log
+echo -n "" > err.log
+
+# Rebuild server
+npm run build

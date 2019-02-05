@@ -1,0 +1,23 @@
+#! /bin/bash
+
+# Stop server
+forever stopall
+
+# Create logs directory if it doesnt exist
+mkdir logs/
+
+# Move logs to log file with timestamp as filename
+mv out.log logs/$(date +%F-%T).log
+
+# Update codebase
+git pull
+yarn install
+
+# Resart server
+npm run build
+npm run prod
+
+# Show status
+forever list
+
+
