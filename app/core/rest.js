@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import verifyGithubWebhook from "verify-github-webhook";
+import verifyGithubWebhook from 'verify-github-webhook';
 
 import auth from './auth';
 import * as UserController from '../Controllers/UserController';
