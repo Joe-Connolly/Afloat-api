@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app/app.js --exec babel-node",
+    "start": "nodemon app/cluster.js --exec babel-node",
     "build": "babel -d ./dist app -s",
-    "prod": "NODE_ENV=production forever -o out.log -e err.log start ./dist/app.js",
+    "prod": "NODE_ENV=production forever -o out.log -e err.log start ./dist/cluster.js",
     "lint": "eslint 'app/**/*.js'"
   },
   "repository": {
