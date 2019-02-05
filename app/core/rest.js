@@ -17,7 +17,7 @@ router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
 router.get('/t', (req, res) => {
-  res.send('123');
+  res.send("Yooooo");
 });
 
 // Restart server route (only GitHub closing PRs has access)
