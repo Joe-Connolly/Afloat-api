@@ -12,3 +12,5 @@ yarn install
 
 # Rebuild server
 npm run build
+killall node
+npm run prod
