@@ -14,7 +14,9 @@ router.get('/', (req, res) => {
 router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
+// asdfkj98123792134ASDJKH
 router.post('/getGitUpdate', (req, res) => {
+  console.log(req.headers);
   if (req.body.payload.action === 'closed') {
     console.log('Git pull and reset the server');
   }
