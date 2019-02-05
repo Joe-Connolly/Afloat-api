@@ -25,7 +25,7 @@ router.post('/getGitUpdate', (req, res) => {
   // console.log();
 
   const signature = req.headers['x-hub-signature'];
-  const payload = JSON.stringify(req.body.payload);
+  const payload = JSON.stringify(req.body);
   const secret = 'asdfkj98123792134ASDJKH';
 
   console.log(`Signature: ${signature}`);
