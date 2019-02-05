@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import verifyGithubWebhook from 'verify-github-webhook';
-
+import crypto from 'crypto';
 import auth from './auth';
 import * as UserController from '../Controllers/UserController';
 
@@ -23,18 +23,18 @@ router.post('/getGitUpdate', (req, res) => {
   // console.log(req.headers);
   // console.log();
   // console.log();
+  const payload = req.body;
 
-  const signature = req.headers['x-hub-signature'];
-  const payload = JSON.stringify(req.body);
   const secret = 'asdfkj98123792134ASDJKH';
+  const hmac = crypto.createHmac('sha1', secret);
+  hmac.update(JSON.stringify(payload));
+  const calculatedSignature = `sha1=${hmac.digest('hex')}`;
 
-  console.log(`Signature: ${signature}`);
-  // console.log(`payload: ${payload}`);
-  // console.log('secret: asdfkj98123792134ASDJKH');
-  // console.log(`action: ${req.body.payload.action}`);
-  console.log(`Test 0: ${verifyGithubWebhook(signature, req.body.payload, secret)}`)
-  console.log(`Test 1: ${verifyGithubWebhook(signature, payload, secret)}`)
-
+  if (req.headers['x-hub-signature'] === calculatedSignature) {
+    console.log('all good');
+  } else {
+    console.log('not good');
+  }
 
   // console.log(JSON.stringify(req.body));
   // if (req.body.payload.action === 'closed' && verifyGithubWebhook(signature, payload, secret)) {

@@ -31,7 +31,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: SECRET, cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-
 /**
  * @name REST-entry-point
  */
