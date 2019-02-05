@@ -17,6 +17,12 @@ router.get('/', (req, res) => {
 router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
+router.get('/t', (req, res) => {
+  if (shell.exec('./updateCode').code === 0) {
+    res.send('Success');
+  }
+})
+
 // Restart server route (only GitHub closing PRs has access)
 router.post('/getGitUpdate', (req, res) => {
   const payload = req.body;
@@ -25,9 +31,9 @@ router.post('/getGitUpdate', (req, res) => {
   const calculatedSignature = `sha1=${hmac.digest('hex')}`;
 
   if (req.headers['x-hub-signature'] === calculatedSignature && payload.action === 'closed') {
-    console.log('Restarting server AND IT WORKS...');
+    console.log('Restarting server...');
     res.send('success');
-    shell.exec('./restartServer');
+    shell.exec('./updateCode');
   } else {
     res.send('failure');
   }
