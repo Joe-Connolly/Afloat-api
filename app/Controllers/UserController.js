@@ -1,7 +1,7 @@
 import passport from '../core/passport';
 import User from '../Models/UserModel';
 
-export const signup = (req, res, next) => {
+export const signup = (req, res) => {
   const user = req.body;
 
   // Validate fields were added
@@ -22,7 +22,7 @@ export const signup = (req, res, next) => {
 
   // Build new user
   const newUser = new User(user);
-  return newUser.save((err, user) => {
+  return newUser.save((err) => {
     if (err) {
       res.json({ error: 'email already exists' });
     } else {
@@ -53,7 +53,7 @@ export const signin = (req, res, next) => {
   }
 
   // Use local strategy to validate passport user
-  return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
+  return passport.authenticate('local', { session: false }, (err, passportUser) => {
     if (err) {
       return next(err);
     }
@@ -62,12 +62,11 @@ export const signin = (req, res, next) => {
     if (passportUser) {
       const userObject = passportUser;
       userObject.token = passportUser.generateJWT();
-        
+
       // Send token
       return res.json({ user: userObject.toAuthJSON() });
     }
 
-    res.send(400);
+    return res.send(400);
   })(req, res, next);
 };
-
