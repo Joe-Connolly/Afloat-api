@@ -15,8 +15,10 @@ router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
 router.post('/getGitUpdate', (req, res) => {
-  console.log(JSON.stringify(req.body.payload));
-})
+  if (req.body.payload.action === 'closed') {
+    console.log('Git pull and reset the server');
+  }
+});
 
 // Sample protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {
