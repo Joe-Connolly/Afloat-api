@@ -24,9 +24,9 @@ router.post('/getGitUpdate', (req, res) => {
   console.log();
   console.log();
   // console.log(JSON.stringify(req.body));
-  // if (req.body.payload.action === 'closed') {
-  //   console.log('Git pull and reset the server');
-  // }
+  if (req.body.payload.action === 'closed') {
+    console.log('Git pull and reset the server');
+  }
   res.send('success');
 });
 
