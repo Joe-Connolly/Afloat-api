@@ -25,6 +25,7 @@ UserSchema.pre('save', function beforeUserSave(next) {
     user.password = hash;
     return next();
   });
+  return 'error';
 });
 
 // Schema method to compare/validate hashed password

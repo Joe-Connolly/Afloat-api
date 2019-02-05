@@ -1,5 +1,6 @@
-const jwt = require('express-jwt');
 import * as ENV from '../env';
+
+const jwt = require('express-jwt');
 
 const { SECRET } = ENV;
 

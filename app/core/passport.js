@@ -1,15 +1,8 @@
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
-import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import User from '../Models/UserModel';
-import * as ENV from '../env';
 
-const { SECRET } = ENV;
 const localOptions = { usernameField: 'email', passwordField: 'password' };
-const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-  secretOrKey: SECRET,
-};
 
 passport.serializeUser((user, done) => {
   done(null, user._id);
