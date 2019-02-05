@@ -3,7 +3,7 @@ import verifyGithubWebhook from 'verify-github-webhook';
 import crypto from 'crypto';
 import auth from './auth';
 import * as UserController from '../Controllers/UserController';
-
+import { SECRET } from '../env';
 const router = Router();
 
 
@@ -15,32 +15,22 @@ router.get('/', (req, res) => {
 router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
-// asdfkj98123792134ASDJKH
+// Restart server route (only GitHub closing PRs has access)
 router.post('/getGitUpdate', (req, res) => {
-  // console.log(req.body);
-  // console.log();
-  // console.log();
-  // console.log(req.headers);
-  // console.log();
-  // console.log();
   const payload = req.body;
-
-  const secret = 'asdfkj98123792134ASDJK';
-  const hmac = crypto.createHmac('sha1', secret);
+  const hmac = crypto.createHmac('sha1', SECRET);
   hmac.update(JSON.stringify(payload));
   const calculatedSignature = `sha1=${hmac.digest('hex')}`;
 
-  if (req.headers['x-hub-signature'] === calculatedSignature) {
-    console.log('all good');
-  } else {
-    console.log('not good');
-  }
+  console.log();
+  console.log(payload['action']);
+  console.log();
 
-  // console.log(JSON.stringify(req.body));
-  // if (req.body.payload.action === 'closed' && verifyGithubWebhook(signature, payload, secret)) {
-  //   console.log('Git pull and reset the server');
-  // }
-  res.send('success');
+  if (req.headers['x-hub-signature'] === calculatedSignature) {
+    res.send('success');
+  } else {
+    res.send('failure');
+  }
 });
 
 // Test restart
