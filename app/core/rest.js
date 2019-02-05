@@ -25,7 +25,7 @@ router.post('/getGitUpdate', (req, res) => {
   const calculatedSignature = `sha1=${hmac.digest('hex')}`;
 
   if (req.headers['x-hub-signature'] === calculatedSignature && payload.action === 'closed') {
-    console.log('Restarting server...');
+    console.log('Restarting server AND IT WORKS...');
     res.send('success');
     shell.exec('./restartServer');
   } else {
