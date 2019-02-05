@@ -11,6 +11,7 @@ mv out.log logs/$(date +%F-%T).log
 
 # Update codebase
 git pull
+yarn install
 
 # Resart server
 npm run build
