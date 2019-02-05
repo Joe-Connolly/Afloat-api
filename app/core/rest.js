@@ -15,7 +15,7 @@ router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
 router.post('/getGitUpdate', (req, res) => {
-  console.log(JSON.stringify(req.body));
+  console.log(JSON.stringify(req.body.payload));
 })
 
 // Sample protected route
