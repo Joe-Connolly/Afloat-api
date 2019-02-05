@@ -17,14 +17,19 @@ router.post('/signin', auth.optional, UserController.signin);
 
 // asdfkj98123792134ASDJKH
 router.post('/getGitUpdate', (req, res) => {
-  console.log(req.body);
-  console.log();
-  console.log();
-  console.log(req.headers);
-  console.log();
-  console.log();
+  // console.log(req.body);
+  // console.log();
+  // console.log();
+  // console.log(req.headers);
+  // console.log();
+  // console.log();
+
+  const signature = req.headers['x-hub-signature'];
+  const payload = JSON.stringify(req.body.payload);
+  const secret = 'asdfkj98123792134ASDJKH';
+
   // console.log(JSON.stringify(req.body));
-  if (req.body.payload.action === 'closed') {
+  if (req.body.payload.action === 'closed' && verifyGithubWebhook(signature, payload, secret)) {
     console.log('Git pull and reset the server');
   }
   res.send('success');
