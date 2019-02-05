@@ -20,6 +20,11 @@ router.post('/getGitUpdate', (req, res) => {
   }
 });
 
+// Test restart
+router.get('/lol', (req, res) => {
+  res.send("you win!");
+})
+
 // Sample protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {
   // We can use these to query the DB for records for a user
