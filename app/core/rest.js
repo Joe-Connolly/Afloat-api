@@ -14,6 +14,10 @@ router.get('/', (req, res) => {
 router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 
+router.post('/getGitUpdate', (req, res) => {
+  console.log("YOY OY OY OY OY OY O");
+})
+
 // Sample protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {
   // We can use these to query the DB for records for a user
