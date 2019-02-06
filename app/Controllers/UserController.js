@@ -24,10 +24,10 @@ export const signup = (req, res) => {
   const newUser = new User(user);
   return newUser.save((err) => {
     if (err) {
-      console.log("Failed to register");
+      console.log('Failed to register');
       res.json({ error: 'email already exists' });
     } else {
-      console.log("Successful register");
+      console.log('Successful register');
       res.json({ user: newUser.toAuthJSON() });
     }
   });
@@ -64,11 +64,21 @@ export const signin = (req, res, next) => {
     if (passportUser) {
       const userObject = passportUser;
       userObject.token = passportUser.generateJWT();
-      
+
       // Send token
       return res.json({ user: userObject.toAuthJSON() });
     }
 
     return res.send(400);
   })(req, res, next);
+};
+
+
+export const getUser = (req, res) => {
+  console.log(req.payload);
+  User.findById(req.payload.id).then((user) => {
+    res.json({ user });
+  }).catch((error) => {
+    res.status(500).send({ error });
+  });
 };
