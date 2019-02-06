@@ -15,6 +15,7 @@ router.post('/getGitUpdate', updateOnPRClose);
 // Login routes
 router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
+router.get('/getUser', auth.required, UserController.getUser);
 
 
 // -----> Example protected route
@@ -30,5 +31,3 @@ router.get('/testProtectedRoute', auth.required, (req, res) => {
 });
 
 export default router;
-
-  
