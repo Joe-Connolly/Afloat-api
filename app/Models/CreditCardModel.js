@@ -14,11 +14,11 @@ CreditCardSchema.set('toJSON', {
 });
 
 // Pre-save hook left in case we want to validate card number before saving
-// CreditCardSchema.pre('save', function beforeUserSave(next) {
+// CreditCardSchema.pre('save', function beforeCreditCardSave(next) {
 //
 // });
 
 // Create model class
-const User = mongoose.model('User', CreditCardSchema);
+const CreditCard = mongoose.model('User', CreditCardSchema);
 
-export default User;
+export default CreditCard;
