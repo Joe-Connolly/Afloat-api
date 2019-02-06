@@ -7,6 +7,7 @@ const CreditCardSchema = new Schema({
   name: String,
   exp: Number,
   address: String,
+  default: Boolean,
 });
 
 CreditCardSchema.set('toJSON', {
