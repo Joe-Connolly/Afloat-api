@@ -1,22 +1,5 @@
-const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
-const chalk = require('chalk');
+import { distribute } from './core/distributeServer';
 
-// The master process will fork a process for each CPU
-if (cluster.isMaster) {
-  // Let us know how many CPUs we're distributing amongst
-  console.log(`Running with ${chalk.hex('#009688')(numCPUs)} cpus`);
-  for (let n = 0; n < numCPUs; n++) {
-    cluster.fork();
-  }
-
-  // Exit callback
-  cluster.on('exit', (worker) => {
-    console.log(`Server worker with PID: ${worker.process.pid} exited`);
-  });
-} else {
-  // If a worker, import our server entry point
-  /*eslint-disable */
-  require('./app.js');
-  /* eslint-enable */
-}
+// Call the distribute function on our server entry point
+// Will run our server across each core of the host machine
+distribute('./app.js');

@@ -30,3 +30,5 @@ router.get('/testProtectedRoute', auth.required, (req, res) => {
 });
 
 export default router;
+
+  

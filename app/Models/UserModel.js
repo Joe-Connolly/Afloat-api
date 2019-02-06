@@ -9,7 +9,9 @@ const { SECRET } = ENV;
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
   fullname: String,
+  username: String,
   password: String,
+  phone: String,
 });
 
 UserSchema.set('toJSON', {
