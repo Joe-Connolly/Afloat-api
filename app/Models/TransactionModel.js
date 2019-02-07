@@ -1,14 +1,14 @@
-import mongoose, { Schema, mongo } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 // Base credit card schema
 const TransactionSchema = new Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  transactionId: String,
+  paymentId: { type: String, unique: true },
   amount: Number,
-  status: String,
   from: { type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard' },
   to: { type: mongoose.Schema.Types.ObjectId, ref: 'BankAccount' },
-  date: Date,
+  status: String,
+  date: { type: Date, default: Date.now },
 });
 
 TransactionSchema.set('toJSON', {

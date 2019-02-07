@@ -1,84 +1,34 @@
-import passport from '../core/passport';
 import Transaction from '../Models/TransactionModel';
+import User from '../Models/UserModel';
 
-// export const signup = (req, res) => {
-//   const user = req.body;
+// Method that creates a transaction for a user
+export const createTransaction = (req, res) => {
+  const { paymentId } = req.body;
 
-//   // Validate fields were added
-//   if (!user.email) {
-//     return res.status(422).json({
-//       errors: {
-//         email: 'Error, email is required',
-//       },
-//     });
-//   }
-//   if (!user.password) {
-//     return res.status(422).json({
-//       errors: {
-//         password: 'Error, password is required',
-//       },
-//     });
-//   }
+  if (!paymentId) {
+    return res.status(422).json({
+      errors: {
+        paymentId: 'Missing',
+      },
+    });
+  }
 
-//   // Build new user
-//   const newUser = new User(user);
-//   return newUser.save((err) => {
-//     if (err) {
-//       console.log('Failed to register');
-//       res.json({ error: 'email already exists' });
-//     } else {
-//       console.log('Successful register');
-//       res.json({ user: newUser.toAuthJSON() });
-//     }
-//   });
-// };
+  // Build transaction
+  const transaction = new Transaction({ paymentId });
+  transaction.user = req.user.id;
 
-
-// export const signin = (req, res, next) => {
-//   const user = req.body;
-
-//   // Validate email and password fields were provided
-//   if (!user.email) {
-//     return res.status(422).json({
-//       errors: {
-//         email: 'Error: email is required',
-//       },
-//     });
-//   }
-
-//   if (!user.password) {
-//     return res.status(422).json({
-//       errors: {
-//         password: 'Error: password is required',
-//       },
-//     });
-//   }
-
-//   // Use local strategy to validate passport user
-//   return passport.authenticate('local', { session: false }, (err, passportUser) => {
-//     if (err) {
-//       return next(err);
-//     }
-
-//     // If a user is returned, generate JWT and send to user
-//     if (passportUser) {
-//       const userObject = passportUser;
-//       userObject.token = passportUser.generateJWT();
-
-//       // Send token
-//       return res.json({ user: userObject.toAuthJSON() });
-//     }
-
-//     return res.send(400);
-//   })(req, res, next);
-// };
-
-
-// export const getUser = (req, res) => {
-//   console.log(req.payload);
-//   User.findById(req.payload.id).then((user) => {
-//     res.json({ user });
-//   }).catch((error) => {
-//     res.status(500).send({ error });
-//   });
-// };
+  // Save transaction
+  transaction.save().then((result) => {
+    // Update parent
+    User.findByIdAndUpdate(
+      req.user.id,
+      { $push: { transactions: result } },
+      { safe: true, upsert: true },
+      (err) => {
+        if (err) {
+          res.status(422).send({ err });
+        }
+      },
+    );
+  }).catch((error) => { res.status(500).send({ error }); });
+};

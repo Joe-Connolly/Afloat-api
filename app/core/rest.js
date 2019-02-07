@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import auth from './auth';
 import * as UserController from '../Controllers/UserController';
+import * as TransactionController from '../Controllers/TransactionController';
 import { updateOnPRClose } from '../Controllers/GitWebhookController';
 
 const router = Router();
@@ -17,12 +18,15 @@ router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
 router.get('/getUser', auth.required, UserController.getUser);
 
+// Transaction routes
+router.post('/createTransaction', auth.required, TransactionController.createTransaction);
+
 
 // -----> Example protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {
   // We can use these to query the DB for records for a user
-  const userEmail = req.payload.email;
-  const userId = req.payload.id;
+  const userEmail = req.user.email;
+  const userId = req.user.id;
 
   // Do protected things here for the userId
 
