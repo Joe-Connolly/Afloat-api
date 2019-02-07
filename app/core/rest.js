@@ -20,6 +20,7 @@ router.get('/getUser', auth.required, UserController.getUser);
 
 // Transaction routes
 router.post('/createTransaction', auth.required, TransactionController.createTransaction);
+router.get('/getTransactionsForUser', auth.required, TransactionController.getTransactionsForUser);
 
 
 // -----> Example protected route
