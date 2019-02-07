@@ -19,6 +19,6 @@ CreditCardSchema.set('toJSON', {
 // });
 
 // Create model class
-const CreditCard = mongoose.model('User', CreditCardSchema);
+const CreditCard = mongoose.model('CreditCard', CreditCardSchema);
 
 export default CreditCard;

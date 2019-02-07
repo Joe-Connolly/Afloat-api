@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import auth from './auth';
 import * as UserController from '../Controllers/UserController';
+import * as CreditCardController from '../Controllers/CreditCardController';
 import { updateOnPRClose } from '../Controllers/GitWebhookController';
 
 const router = Router();
@@ -8,6 +9,8 @@ const router = Router();
 router.get('/', (req, res) => {
   res.send('Hello, world!');
 });
+
+router.post('/addCard', auth.required, CreditCardController.addCard);
 
 // Restart server route (only GitHub closing PRs has access)
 router.post('/getGitUpdate', updateOnPRClose);
@@ -30,5 +33,3 @@ router.get('/testProtectedRoute', auth.required, (req, res) => {
 });
 
 export default router;
-
-  
