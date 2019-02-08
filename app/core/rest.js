@@ -11,7 +11,6 @@ router.get('/', (req, res) => {
   res.send('Hello, world!');
 });
 
-router.post('/addCard', auth.required, CreditCardController.addCard);
 
 // Restart server route (only GitHub closing PRs has access)
 router.post('/getGitUpdate', updateOnPRClose);
@@ -25,6 +24,9 @@ router.get('/getUser', auth.required, UserController.getUser);
 router.post('/createTransaction', auth.required, TransactionController.createTransaction);
 router.get('/getTransactionsForUser', auth.required, TransactionController.getTransactionsForUser);
 
+// Credit Card routes
+router.post('/addCard', auth.required, CreditCardController.addCard);
+router.get('/getCards', auth.required, CreditCardController.getCardsForUser);
 
 // -----> Example protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {

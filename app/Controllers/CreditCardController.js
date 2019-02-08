@@ -29,7 +29,7 @@ export const addCard = (req, res) => {
 
   // Build new user
   const newCreditCard = new CreditCard(creditCard);
-  newCreditCard.user = mongoose.Types.ObjectId(req.payload.id);
+  newCreditCard.user = mongoose.Types.ObjectId(req.user.id);
   return newCreditCard.save((err) => {
     if (err) {
       console.log('Card not added');
@@ -41,42 +41,20 @@ export const addCard = (req, res) => {
   });
 };
 
-//
-// export const signin = (req, res, next) => {
-//   const user = req.body;
-//
-//   // Validate email and password fields were provided
-//   if (!user.email) {
-//     return res.status(422).json({
-//       errors: {
-//         email: 'Error: email is required',
-//       },
-//     });
-//   }
-//
-//   if (!user.password) {
-//     return res.status(422).json({
-//       errors: {
-//         password: 'Error: password is required',
-//       },
-//     });
-//   }
-//
-//   // Use local strategy to validate passport user
-//   return passport.authenticate('local', { session: false }, (err, passportUser) => {
-//     if (err) {
-//       return next(err);
-//     }
-//
-//     // If a user is returned, generate JWT and send to user
-//     if (passportUser) {
-//       const userObject = passportUser;
-//       userObject.token = passportUser.generateJWT();
-//
-//       // Send token
-//       return res.json({ user: userObject.toAuthJSON() });
-//     }
-//
-//     return res.send(400);
-//   })(req, res, next);
-// };
+// Utility method to sanitize credit card record before sending
+// Sends only the last four digits of card number
+const cleanCreditCard = (card) => {
+  const lastFour = card.number % 10000;
+  const id = card._id;
+  return { id, lastFour };
+};
+
+// Utility method to sanitize credit card records before sending
+const cleanCreditCards = transactions => transactions.map(card => cleanCreditCard(card));
+
+
+export const getCardsForUser = (req, res) => {
+  CreditCard.find({ user: req.user.id }, (err, docs) => {
+    res.send(cleanCreditCards(docs));
+  }).catch((err) => { res.status(500).send({ err }); });
+};
