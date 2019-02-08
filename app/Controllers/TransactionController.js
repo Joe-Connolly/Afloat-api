@@ -45,6 +45,7 @@ export const createTransaction = (req, res) => {
         if (err) {
           res.status(422).send({ err });
         }
+        res.send(result);
       },
     );
   }).catch((error) => { res.status(500).send({ error }); });
