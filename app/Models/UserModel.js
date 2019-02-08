@@ -13,6 +13,7 @@ const UserSchema = new Schema({
   password: String,
   phone: String,
   transactions: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],
+  creditCards: [{ type: Schema.Types.ObjectId, ref: 'CreditCard' }],
 });
 
 UserSchema.set('toJSON', {
