@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import CreditCard from '../Models/CreditCardModel';
+import User from '../Models/UserModel';
 
 export const addCard = (req, res) => {
   const creditCard = req.body;
@@ -36,6 +37,16 @@ export const addCard = (req, res) => {
       res.json({ error: 'card not added' });
     } else {
       console.log('Card added successfully');
+      User.findByIdAndUpdate(
+        req.user.id,
+        { $push: { creditCards: newCreditCard } },
+        { safe: true, upsert: true },
+        (error) => {
+          if (error) {
+            res.status(422).send({ err });
+          }
+        },
+      );
       res.json({ card: newCreditCard });
     }
   });
