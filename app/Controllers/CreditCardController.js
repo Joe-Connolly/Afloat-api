@@ -41,6 +41,7 @@ export const addCard = (req, res) => {
   });
 };
 
+
 // Utility method to sanitize credit card record before sending
 // Sends only the last four digits of card number
 const cleanCreditCard = (card) => {
