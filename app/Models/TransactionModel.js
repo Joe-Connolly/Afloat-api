@@ -3,8 +3,9 @@ import mongoose, { Schema } from 'mongoose';
 // Base credit card schema
 const TransactionSchema = new Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  paymentId: { type: String, unique: true },
-  amount: Number,
+  paymentId: { type: String },
+  orderId: { type: String, unique: true },
+  amount: String,
   from: { type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard' },
   to: { type: mongoose.Schema.Types.ObjectId, ref: 'BankAccount' },
   status: String,

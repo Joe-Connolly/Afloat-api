@@ -22,6 +22,7 @@ router.get('/getUser', auth.required, UserController.getUser);
 
 // Transaction routes
 router.post('/createTransaction', auth.required, TransactionController.createTransaction);
+router.post('/createOrder', auth.required, TransactionController.createOrder);
 router.get('/getTransactionsForUser', auth.required, TransactionController.getTransactionsForUser);
 
 // Credit Card routes
