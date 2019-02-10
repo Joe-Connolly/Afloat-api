@@ -6,8 +6,8 @@ const axios = require('axios');
 
 // Utility method to sanitize transaction record before sending
 const cleanTransaction = (transaction) => {
-  const { paymentId, date, amount } = transaction;
-  return { paymentId, date, amount };
+  const { paymentId, date, amount, status } = transaction;
+  return { paymentId, date, amount, status };
 };
 
 // Utility method to sanitize transaction records before sending
@@ -22,7 +22,7 @@ export const getTransactionsForUser = (req, res) => {
 
 // Method that creates a transaction for a user
 export const createTransaction = (req, res) => {
-  const { paymentId } = req.body;
+  const { paymentId, orderId } = req.body;
 
   if (!paymentId) {
     return res.status(422).json({
@@ -32,25 +32,16 @@ export const createTransaction = (req, res) => {
     });
   }
 
-  // Build transaction
-  const transaction = new Transaction({ paymentId });
-  transaction.user = req.user.id;
-
-  // Save transaction
-  transaction.save().then((result) => {
-    // Update parent
-    User.findByIdAndUpdate(
-      req.user.id,
-      { $push: { transactions: result } },
-      { safe: true, upsert: true },
-      (err) => {
-        if (err) {
-          res.status(422).send({ err });
-        }
-        res.send(result);
-      },
-    );
-  }).catch((error) => { res.status(500).send({ error }); });
+  Transaction.findOne({ orderId }, (err, transaction) => {
+    transaction.paymentId = paymentId;
+    transaction.save((e) => {
+      if (e) {
+        console.error('ERROR!');
+      }
+    });
+    console.log(transaction);
+    res.send(transaction);
+  });
 };
 
 // Method that creates a transaction for a user
@@ -79,17 +70,16 @@ export const createOrder = (req, res) => {
       },
     })
     .then((response) => {
-      console.log(response.data);
-
       // Build transaction
-      const transaction = new Transaction({ orderId: response.data.id, paymentId: response.data.id });
+      console.log(response);
+      const transaction = new Transaction({ orderId: response.data.id, paymentId: 'as' });
       transaction.user = req.user.id;
-      console.log(req.user.amount);
+      console.log(req.body.amount);
       transaction.amount = amount;
 
       // Save transaction
       transaction.save().then((result) => {
-        console.log(result);
+        console.log('created new transaction');
         // Update parent
         User.findByIdAndUpdate(
           req.user.id,
@@ -99,6 +89,7 @@ export const createOrder = (req, res) => {
             if (err) {
               res.status(422).send({ err });
             }
+            console.log('updated user');
             // console.log(result);
             res.send(result);
           },
@@ -108,4 +99,27 @@ export const createOrder = (req, res) => {
     .catch((error) => {
       console.log(error);
     });
+};
+
+// Method that creates a transaction for a user
+export const razorpayWebhook = (req, res) => {
+  console.log(req.body);
+  const { event } = req.body;
+  const { order_id, status } = req.body.payload.payment.entity;
+
+
+  Transaction.findOne({ orderId: order_id }, (err, transaction) => {
+    if (err) {
+      res.status(400);
+    }
+
+    transaction.status = status;
+    transaction.save((e) => {
+      if (e) {
+        console.error('ERROR!');
+        res.status(420);
+      }
+    });
+    res.status(200);
+  });
 };

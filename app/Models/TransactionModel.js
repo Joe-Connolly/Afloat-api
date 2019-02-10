@@ -5,7 +5,7 @@ const TransactionSchema = new Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   paymentId: { type: String },
   orderId: { type: String, unique: true },
-  amount: String,
+  amount: Number,
   from: { type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard' },
   to: { type: mongoose.Schema.Types.ObjectId, ref: 'BankAccount' },
   status: String,
