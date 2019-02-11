@@ -20,11 +20,11 @@ export const getTransactionsForUser = (req, res) => {
   }).catch((err) => { res.status(500).send({ err }); });
 };
 
-// Method that creates a transaction for a user
+// Method that adds a payment to the transaction
 export const createTransaction = (req, res) => {
   const { paymentId, orderId } = req.body;
 
-  if (!paymentId) {
+  if (!orderId) {
     return res.status(422).json({
       errors: {
         paymentId: 'Missing',
@@ -32,6 +32,7 @@ export const createTransaction = (req, res) => {
     });
   }
 
+  // add returned paymentId to transaction
   Transaction.findOne({ orderId }, (err, transaction) => {
     transaction.paymentId = paymentId;
     transaction.save((e) => {
@@ -39,12 +40,11 @@ export const createTransaction = (req, res) => {
         console.error('ERROR!');
       }
     });
-    console.log(transaction);
     res.send(transaction);
   });
 };
 
-// Method that creates a transaction for a user
+// Method that creates an order with razorpay
 export const createOrder = (req, res) => {
   const { amount } = req.body;
 
@@ -56,6 +56,7 @@ export const createOrder = (req, res) => {
     });
   }
 
+  // post request to razorpay order route
   axios.post('https://api.razorpay.com/v1/orders',
     {
       amount,
@@ -71,11 +72,9 @@ export const createOrder = (req, res) => {
     })
     .then((response) => {
       // Build transaction
-      console.log(response);
       const transaction = new Transaction({ orderId: response.data.id });
       transaction.user = req.user.id;
       transaction.status = 'created';
-
       transaction.amount = amount;
 
       // Save transaction
@@ -90,8 +89,6 @@ export const createOrder = (req, res) => {
             if (err) {
               res.status(422).send({ err });
             }
-            console.log('updated user');
-            // console.log(result);
             res.send(result);
           },
         );
@@ -102,12 +99,9 @@ export const createOrder = (req, res) => {
     });
 };
 
-// Method that creates a transaction for a user
+// Method that updates status on order.paid or payment.failed
 export const razorpayWebhook = (req, res) => {
-  console.log(req.body);
-  const { event } = req.body;
   const { order_id, status } = req.body.payload.payment.entity;
-
 
   Transaction.findOne({ orderId: order_id }, (err, transaction) => {
     if (err) {
