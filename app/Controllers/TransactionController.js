@@ -6,8 +6,8 @@ const axios = require('axios');
 
 // Utility method to sanitize transaction record before sending
 const cleanTransaction = (transaction) => {
-  const { paymentId, date, amount, status } = transaction;
-  return { paymentId, date, amount, status };
+  const { paymentId, date, amount, status, orderId } = transaction;
+  return { paymentId, date, amount, status, orderId };
 };
 
 // Utility method to sanitize transaction records before sending
@@ -72,9 +72,10 @@ export const createOrder = (req, res) => {
     .then((response) => {
       // Build transaction
       console.log(response);
-      const transaction = new Transaction({ orderId: response.data.id, paymentId: 'as' });
+      const transaction = new Transaction({ orderId: response.data.id });
       transaction.user = req.user.id;
-      console.log(req.body.amount);
+      transaction.status = 'created';
+
       transaction.amount = amount;
 
       // Save transaction
