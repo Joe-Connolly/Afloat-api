@@ -19,15 +19,9 @@ We host on [AWS](https://aws.amazon.com), using a free-tier, single-core EC2 AMI
 Our api can be found at:
 > http://ec2-54-212-62-214.us-west-2.compute.amazonaws.com/api/
 
-The available routes are:
-  - ```GET /```: base route, returns "Hello, world!"
-  - ```POST /signup```: no auth required, returns a token
-  - ```POST /signin```: no auth required, returns a token
-  - ```POST /getGitUpdate```: auth required, only accessible by GitHub
-
 ## Setup
 
-Clone the repository and navigate to its root folder. Install Node/Express. This is a good tutorial for installing Node/Express:  https://www.youtube.com/watch?v=gnsO8-xJ8rs   
+Clone the repository and navigate to its root folder. The backend is written in node. 
 
 ## Deployment
 Navigate to the root folder of the repo and type:
