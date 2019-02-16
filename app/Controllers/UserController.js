@@ -22,6 +22,8 @@ export const signup = (req, res) => {
 
   // Build new user
   const newUser = new User(user);
+  newUser.bankSet = false;
+  newUser.verified = false;
   return newUser.save((err) => {
     if (err) {
       console.log('Failed to register');

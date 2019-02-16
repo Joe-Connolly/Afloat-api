@@ -14,6 +14,9 @@ const UserSchema = new Schema({
   phone: String,
   transactions: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],
   creditCards: [{ type: Schema.Types.ObjectId, ref: 'CreditCard' }],
+  bankAccount: String,
+  verified: Boolean,
+  bankSet: Boolean,
 });
 
 UserSchema.set('toJSON', {
