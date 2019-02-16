@@ -8,7 +8,8 @@ const { SECRET } = ENV;
 // Base user schema
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
-  fullname: String,
+  firstname: String,
+  lastname: String,
   username: String,
   password: String,
   phone: String,

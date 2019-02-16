@@ -11,7 +11,7 @@ function delay(time) {
 export const addBankForUser = async (req, res) => {
   const browser = await puppeteer.launch({ headless: false });
 
-  const { email, name, IFSC, accountNumber } = req.body;
+  const { email, firstname, lastname, IFCS, accountNumber } = req.body;
 
   // const email = 'azhar.hussain@dartmouth.edu';
   // const name = 'Azhar Hussain';
@@ -59,7 +59,7 @@ export const addBankForUser = async (req, res) => {
   });
 
   // add name and email
-  await page.keyboard.type(name).catch((e) => {
+  await page.keyboard.type(`${firstname} ${lastname}`).catch((e) => {
     res.status(411).send({ e });
   });
   await page.keyboard.press('Tab');
@@ -71,10 +71,11 @@ export const addBankForUser = async (req, res) => {
   await page.keyboard.press('Enter');
 
   // add business details
+  await delay(2000);
   await page.waitForSelector('input[name="business_name"]').catch((e) => {
     res.status(413).send({ e });
   });
-  await page.keyboard.type(name).catch((e) => {
+  await page.keyboard.type(`${firstname} ${lastname}`).catch((e) => {
     res.status(414).send({ e });
   });
   await page.keyboard.press('Tab').catch((e) => {
@@ -94,13 +95,13 @@ export const addBankForUser = async (req, res) => {
   });
 
   // bank info
-  await page.keyboard.type(IFSC);
+  await page.keyboard.type(IFCS);
   await page.keyboard.press('Tab');
   await page.keyboard.type(accountNumber);
   await page.keyboard.press('Tab');
   await page.keyboard.type(accountNumber);
   await page.keyboard.press('Tab');
-  await page.keyboard.type(name);
+  await page.keyboard.type(`${firstname} ${lastname}`);
   await page.keyboard.press('Tab');
   await page.keyboard.press('Enter');
   await delay(2000);
@@ -145,8 +146,6 @@ export const addBankForUser = async (req, res) => {
     res.status(424).send({ e });
   });
 
-  console.log(rzpAccount);
-
   User.findByIdAndUpdate(
     req.user.id,
     { $set: { bankAccount: rzpAccount, bankSet: true } },
@@ -157,4 +156,6 @@ export const addBankForUser = async (req, res) => {
       res.send({ rzpAccount });
     },
   );
+
+  await browser.close();
 };
