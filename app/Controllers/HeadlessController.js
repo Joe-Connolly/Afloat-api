@@ -156,6 +156,6 @@ export const addBankForUser = async (req, res) => {
       res.send({ rzpAccount });
     },
   );
-
+  console.log('test');
   await browser.close();
 };
