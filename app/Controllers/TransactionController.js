@@ -1,3 +1,4 @@
+import Razorpay from 'razorpay';
 import Transaction from '../Models/TransactionModel';
 import User from '../Models/UserModel';
 
@@ -56,6 +57,19 @@ export const createOrder = (req, res) => {
     });
   }
 
+  User.findById(
+    req.user.id,
+    (err, user) => {
+      if (err) {
+        res.status(422).send({ err });
+      }
+
+      if (!user.bankSet) {
+        res.status(423);
+      }
+    },
+  );
+
   // post request to razorpay order route
   axios.post('https://api.razorpay.com/v1/orders',
     {
@@ -106,6 +120,7 @@ export const razorpayWebhook = (req, res) => {
   Transaction.findOne({ orderId: order_id }, (err, transaction) => {
     if (err) {
       res.status(400);
+      console.log('cannot find transaction');
     }
 
     transaction.status = status;
@@ -115,6 +130,38 @@ export const razorpayWebhook = (req, res) => {
         res.status(420);
       }
     });
+
+    if (transaction.status === 'captured') {
+      const rzp = new Razorpay({
+        key_id: 'rzp_test_XYB3SORKydGnpK',
+        key_secret: 'ft2aYQjcNzwoVoZxQ6Gl4KVZ',
+      });
+
+      User.findById(
+        transaction.user,
+        (e, user) => {
+          if (e) {
+            res.status(422).send({ e });
+          }
+          rzp.payments.transfer(transaction.paymentId, {
+            transfers: [
+              {
+                account: user.bankAccount,
+                amount: parseInt(transaction.amount * 0.94, 10),
+                currency: 'INR',
+              },
+            ],
+          }).then((data) => {
+            console.log();
+            console.log(data);
+          }).catch((error) => {
+            console.log('razorpay api error');
+            console.error(error);
+            res.status(421);
+          });
+        },
+      );
+    }
     res.status(200);
   });
 };
