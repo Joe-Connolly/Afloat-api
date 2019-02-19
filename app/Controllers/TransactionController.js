@@ -155,7 +155,6 @@ export const razorpayWebhook = (req, res) => {
             console.log();
             console.log(data);
           }).catch((error) => {
-            console.log('razorpay api error');
             console.error(error);
             res.status(421);
           });
