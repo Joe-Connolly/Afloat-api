@@ -39,7 +39,7 @@ npm run build
 npm run prod
 ````
 
-To access EC2, get the ```.pem``` file from a team member (or slack), then:
+To access EC2 (not necessary to run application in development mode), get the ```.pem``` file from a team member (or slack), then:
 ```Bash
 # Login to the machine
 ssh -i "quantweb.pem" ec2-user@ec2-54-212-62-214.us-west-2.compute.amazonaws.com
