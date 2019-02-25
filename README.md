@@ -54,6 +54,3 @@ cd 19w-quantweb-backend
 ## Authors
 
 Tyler Burnam, Azahr Hussain, Deven Orie, Joe Connolly
-
-## Acknowledgments
-I used the following tutorial to write starter code: https://www.youtube.com/watch?v=gnsO8-xJ8rs
