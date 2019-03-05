@@ -143,21 +143,39 @@ export const razorpayWebhook = (req, res) => {
           if (e) {
             res.status(422).send({ e });
           }
-          rzp.payments.transfer(transaction.paymentId, {
-            transfers: [
-              {
-                account: user.bankAccount,
-                amount: parseInt(transaction.amount * 0.94, 10),
-                currency: 'INR',
-              },
-            ],
-          }).then((data) => {
-            console.log();
-            console.log(data);
-          }).catch((error) => {
-            console.error(error);
-            res.status(421);
-          });
+          const pointsRupeeValue = transaction.amount * 0.008;
+
+          // post request to razorpay order route
+          axios.get('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=INDY&outputsize=compact&apikey=1TTCW4N7SLIUCIWS&interval=1min')
+            .then((response) => {
+              const stockOpen = response.data['Time Series (1min)'][Object.keys(response.data['Time Series (1min)'])[0]]['1. open'];
+              console.log(stockOpen);
+              const userPoints = ((pointsRupeeValue / (parseFloat(stockOpen) * 72)) * 100);
+              console.log(userPoints);
+              user.points += userPoints;
+              user.save((error) => {
+                if (error) {
+                  console.error(error);
+                }
+              });
+              console.log('user points');
+              console.log(user.points);
+              rzp.payments.transfer(transaction.paymentId, {
+                transfers: [
+                  {
+                    account: user.bankAccount,
+                    amount: parseInt(transaction.amount * 0.94, 10),
+                    currency: 'INR',
+                  },
+                ],
+              }).then((data) => {
+                console.log();
+                console.log(data);
+              }).catch((error) => {
+                console.error(error);
+                res.status(421);
+              });
+            });
         },
       );
     }
