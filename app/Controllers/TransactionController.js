@@ -143,14 +143,14 @@ export const razorpayWebhook = (req, res) => {
           if (e) {
             res.status(422).send({ e });
           }
-          const pointsRupeeValue = transaction.amount * 0.008;
+          const pointsRupeeValue = transaction.amount * 0.00008;
 
           // post request to razorpay order route
-          axios.get('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=INDY&outputsize=compact&apikey=1TTCW4N7SLIUCIWS&interval=1min')
+          axios.get('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=INDA&outputsize=compact&apikey=1TTCW4N7SLIUCIWS&interval=1min')
             .then((response) => {
               const stockOpen = response.data['Time Series (1min)'][Object.keys(response.data['Time Series (1min)'])[0]]['1. open'];
-              console.log(stockOpen);
-              const userPoints = ((pointsRupeeValue / (parseFloat(stockOpen) * 72)) * 100);
+              console.log(pointsRupeeValue);
+              const userPoints = (((parseFloat(stockOpen) * 72) / pointsRupeeValue) * 100);
               console.log(userPoints);
               user.points += userPoints;
               user.save((error) => {
