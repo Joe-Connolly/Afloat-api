@@ -150,7 +150,8 @@ export const razorpayWebhook = (req, res) => {
             .then((response) => {
               const stockOpen = response.data['Time Series (1min)'][Object.keys(response.data['Time Series (1min)'])[0]]['1. open'];
               console.log(pointsRupeeValue);
-              const userPoints = (((parseFloat(stockOpen) * 72) / pointsRupeeValue) * 100);
+              console.log(parseFloat(stockOpen));
+              const userPoints = ((pointsRupeeValue / (parseFloat(stockOpen) * 72)) * 100);
               console.log(userPoints);
               user.points += userPoints;
               user.save((error) => {
@@ -171,6 +172,7 @@ export const razorpayWebhook = (req, res) => {
               }).then((data) => {
                 console.log();
                 console.log(data);
+                res.status(200);
               }).catch((error) => {
                 console.error(error);
                 res.status(421);
