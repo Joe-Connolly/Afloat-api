@@ -18,6 +18,7 @@ const UserSchema = new Schema({
   bankAccount: String,
   verified: Boolean,
   bankSet: Boolean,
+  points: { type: Number, default: 0 },
 });
 
 UserSchema.set('toJSON', {
