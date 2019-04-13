@@ -71,7 +71,12 @@ export const signin = (req, res, next) => {
       return res.json({ user: userObject.toAuthJSON() });
     }
 
-    return res.send(400);
+
+    return res.status(422).json({
+      errors: {
+        message: 'Login failed',
+      },
+    });
   })(req, res, next);
 };
 
