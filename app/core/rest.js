@@ -3,7 +3,8 @@ import auth from './auth';
 import * as UserController from '../Controllers/UserController';
 import * as TransactionController from '../Controllers/TransactionController';
 import * as CreditCardController from '../Controllers/CreditCardController';
-import * as HeadlessController from '../Controllers/HeadlessController';
+// import * as HeadlessController from '../Controllers/HeadlessController';
+import * as BankController from '../Controllers/BankController';
 import { updateOnPRClose } from '../Controllers/GitWebhookController';
 
 const router = Router();
@@ -33,7 +34,10 @@ router.post('/addCard', auth.required, CreditCardController.addCard);
 router.get('/getCards', auth.required, CreditCardController.getCardsForUser);
 
 // Bank Account Headless Browser routes
-router.post('/addBank', auth.required, HeadlessController.addBankForUser);
+// router.post('/addBank', auth.required, HeadlessController.addBankForUser);
+
+router.post('/addBank', auth.required, BankController.addBank);
+router.get('/getTransactions', auth.required, BankController.getTransactions);
 
 // -----> Example protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {
