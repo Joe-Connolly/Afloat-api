@@ -48,6 +48,7 @@
     "compression": "^1.7.3",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "dwolla-v2": "^2.0.1",
     "express": "^4.16.4",
     "express-jwt": "^5.3.1",
     "express-session": "^1.15.6",
