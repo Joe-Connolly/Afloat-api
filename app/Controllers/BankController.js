@@ -131,7 +131,7 @@ export const transferAchToUser = (req, res) => {
               const transfer = res3.headers.get('location');
               console.log('transfered');
               console.log(transfer);
-              res.send({ transfer });
+              res.status(200).send({ amount: req.body.amount });
             });
         });
     },
