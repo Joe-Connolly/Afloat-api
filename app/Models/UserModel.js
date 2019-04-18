@@ -21,6 +21,11 @@ const UserSchema = new Schema({
   publicToken: String,
   accessToken: String,
   itemId: String,
+  accountId: String,
+  customerUrl: String,
+  accountUrl: String,
+  active: Boolean,
+  subscriptionEnrolled: Boolean,
 });
 
 UserSchema.set('toJSON', {
