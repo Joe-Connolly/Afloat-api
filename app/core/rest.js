@@ -39,6 +39,7 @@ router.get('/getCards', auth.required, CreditCardController.getCardsForUser);
 router.post('/addBank', auth.required, BankController.addBank);
 router.get('/getTransactions', auth.required, BankController.getTransactions);
 router.post('/transferToUser', auth.required, BankController.transferAchToUser);
+router.post('/enrollSubscription', auth.required, BankController.enrollSubscription);
 
 // -----> Example protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {

@@ -10,14 +10,11 @@ const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
   firstname: String,
   lastname: String,
-  username: String,
   password: String,
   phone: String,
   transactions: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],
-  creditCards: [{ type: Schema.Types.ObjectId, ref: 'CreditCard' }],
-  bankAccount: String,
   verified: Boolean,
-  bankSet: Boolean,
+  bankSet: { type: Boolean, default: false },
   publicToken: String,
   accessToken: String,
   itemId: String,
@@ -25,7 +22,9 @@ const UserSchema = new Schema({
   customerUrl: String,
   accountUrl: String,
   active: Boolean,
+  activeUntil: { type: Date },
   subscriptionEnrolled: Boolean,
+  outstandingBalance: Number,
 });
 
 UserSchema.set('toJSON', {

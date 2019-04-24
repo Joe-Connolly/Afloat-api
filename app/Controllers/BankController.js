@@ -1,14 +1,18 @@
 import mongoose from 'mongoose';
 import plaid from 'plaid';
 import dwolla from 'dwolla-v2';
+import date from 'datejs';
+
 
 import User from '../Models/UserModel';
+import Transfer from '../Models/TransactionModel';
 
 const plaidClientId = '5ca67be24a965e00118c857b';
 const plaidSecret = 'f19c9bfdf87541cf00b69428ea2113';
 const plaidPublic = 'beae29cb016901b1a1d8ac65538e8a';
 const dwallaPublic = 'UWHnZ6XbTZ5bZV0nVbgAZLlkOUCsY8seTSzmrul6oKyExU73C6';
 const dwallaKey = 'gfqUFFSAAU61tLhlriKIyysvau5nsFZLrDIdf3saDuGKF1Av6i';
+
 
 export const addBank = (req, res) => {
   User.findById(
@@ -27,12 +31,8 @@ export const addBank = (req, res) => {
           user.publicToken = req.body.publicToken;
           user.accessToken = response.access_token;
           user.itemId = response.item_id;
-          console.log('Account ID');
-          console.log(req.body.accountId);
           user.accountId = req.body.accountId;
           user.bankSet = true;
-          console.error(response);
-
 
           const client = new dwolla.Client({
             key: dwallaPublic,
@@ -64,8 +64,6 @@ export const addBank = (req, res) => {
                         .post(`${customerUrl}/funding-sources`, requestBodyFunding)
                         .then((res3) => {
                           const userAccount = res3.headers.get('location');
-                          console.log('got in');
-                          console.log(userAccount);
                           user.accountUrl = userAccount;
                           user.save((e) => {
                             if (e) {
@@ -86,6 +84,7 @@ export const addBank = (req, res) => {
 };
 
 export const transferAchToUser = (req, res) => {
+  console.log((1).months().fromNow());
   User.findById(
     req.user.id,
     (err, user) => {
@@ -101,6 +100,7 @@ export const transferAchToUser = (req, res) => {
 
       client.auth.client()
         .then((appToken) => {
+          console.log(user);
           const requestBody = {
             _links: {
               source: {
@@ -129,9 +129,103 @@ export const transferAchToUser = (req, res) => {
             .post('transfers', requestBody)
             .then((res3) => {
               const transfer = res3.headers.get('location');
-              console.log('transfered');
-              console.log(transfer);
-              res.status(200).send({ amount: req.body.amount });
+
+              const newTransfer = new Transfer();
+              newTransfer.user = req.user.id;
+              newTransfer.transactionId = transfer;
+              newTransfer.amount = req.body.amount;
+              newTransfer.incoming = false;
+              newTransfer.type = 'LOAN_DISBURSEMENT';
+              newTransfer.status = 'PROCESSING';
+              console.log(newTransfer);
+              newTransfer.save((e, prod) => {
+                if (e) {
+                  console.error(e);
+                }
+                console.log(prod);
+              });
+
+              console.log('created successfully');
+              console.log(res3.headers.get('location'));
+              res.send({ amount: req.body.amount });
+            });
+        });
+    },
+  );
+};
+
+export const enrollSubscription = (req, res) => {
+  User.findById(
+    req.user.id,
+    (err, user) => {
+      if (err) {
+        res.status(422).send({ err });
+      }
+
+      const client = new dwolla.Client({
+        key: dwallaPublic,
+        secret: dwallaKey,
+        environment: 'sandbox',
+      });
+
+      client.auth.client()
+        .then((appToken) => {
+          console.log(user);
+          const requestBody = {
+            _links: {
+              destination: {
+                href: 'https://api-sandbox.dwolla.com/funding-sources/59e9024d-b406-4a48-9c9a-7d019a7d242a',
+              },
+              source: {
+                href: user.accountUrl,
+              },
+            },
+            amount: {
+              currency: 'USD',
+              value: '10.00',
+            },
+            metadata: {
+              type: 'SUBSCRIPTION',
+            },
+            clearing: {
+              destination: 'next-available',
+              source: 'standard',
+            },
+            correlationId: '8a2cdc8d-629d-4a24-98ac-40b735229fe2',
+          };
+
+          appToken
+            .post('transfers', requestBody)
+            .then((res3) => {
+              const transfer = res3.headers.get('location');
+
+              const newTransfer = new Transfer();
+              newTransfer.user = req.user.id;
+              newTransfer.transactionId = transfer;
+              newTransfer.amount = 10.00;
+              newTransfer.incoming = true;
+              newTransfer.type = 'SUBSCRIPTION';
+              newTransfer.status = 'PROCESSING';
+              console.log(newTransfer);
+              newTransfer.save((e, prod) => {
+                if (e) {
+                  console.error(e);
+                }
+
+                user.active = true;
+                user.subscriptionEnrolled = true;
+                // user.activeUntil = (1).months().fromNow();
+                user.activeUntil = Date.today();
+                user.save((e, prod) => {
+                  if (e) {
+                    console.error(e);
+                  }
+                });
+              });
+
+              console.log('created successfully');
+              console.log(res3.headers.get('location'));
+              res.send({ amount: req.body.amount });
             });
         });
     },
