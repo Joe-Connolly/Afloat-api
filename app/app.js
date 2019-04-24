@@ -12,14 +12,12 @@ import passport from './core/passport';
 import { SECRET, HOST, PORT } from './env';
 import routes from './core/rest';
 import mongoose from './core/mongoose';
-import { subscriptionScheduler } from './Controllers/BankController';
 
 /**
  * @name init
  */
 const app = express();
 
-subscriptionScheduler();
 
 /**
  * @name middleware-functions
