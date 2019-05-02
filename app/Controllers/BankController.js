@@ -1,11 +1,9 @@
-import mongoose from 'mongoose';
 import plaid from 'plaid';
 import dwolla from 'dwolla-v2';
-import date from 'datejs';
-
-
+import dateFormat from 'dateformat';
 import User from '../Models/UserModel';
 import Transfer from '../Models/TransactionModel';
+
 
 const plaidClientId = '5ca67be24a965e00118c857b';
 const plaidSecret = 'f19c9bfdf87541cf00b69428ea2113';
@@ -245,6 +243,77 @@ export const getTransactions = (req, res) => {
       }).catch((error) => { console.log(error); });
     },
   );
+};
+
+
+export const getBalanceRange = (req, res) => {
+  // Get and check request
+  const { body, user } = req;
+  if (body && body.date && user && user.id) {
+    // Consts and variables
+    const startDate = new Date(body.date);
+    const today = new Date();
+    const endDateString = dateFormat(today, 'yyyy-mm-dd');
+    const startDateString = dateFormat(startDate, 'yyyy-mm-dd');
+    let plaidClient;
+    let totalBalance = 0;
+    const cashFlowDaily = {};
+    const cashFlowDailyList = [];
+
+
+    // TODO: We need to persist which accounts are tracked by the app
+    const balanceAccounts = ['checking', 'savings'];
+
+    // Get User ID for Plaid access token
+    User.findById(
+      user.id,
+      (err, userObj) => {
+        if (err) {
+          res.status(422).send({ err });
+        }
+
+        // Build Plaid Client
+        plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
+
+        // Get all transactions/balances for user
+        plaidClient.getTransactions(userObj.accessToken, startDateString, endDateString).then((transactionsRes) => {
+          const { accounts, transactions } = transactionsRes;
+
+          // Build total current balance
+          accounts.forEach((val) => {
+            if (balanceAccounts.indexOf(val.subtype) > -1) {
+              totalBalance += val.balances.current;
+            }
+          });
+
+          // Calculate cash flow per day for transactions
+          transactions.forEach((val) => {
+            if (cashFlowDaily[val.date]) {
+              cashFlowDaily[val.date] += val.amount;
+            } else {
+              cashFlowDaily[val.date] = val.amount;
+            }
+          });
+
+          // Convert cash flow objs to a sorted list of objects
+          Object.keys(cashFlowDaily).forEach((key) => {
+            cashFlowDailyList.push({ date: key, balance: cashFlowDaily[key] });
+          });
+          cashFlowDailyList.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+          // Update balances per day with actual balance
+          const balancePerDay = cashFlowDailyList.map((val) => {
+            totalBalance += val.balance;
+            return { date: val.date, startBalance: totalBalance, flow: val.balance, endBalance: totalBalance - val.balance };
+          });
+
+          res.send(balancePerDay);
+        }).catch((error) => { console.log(error); });
+      },
+    );
+  } else {
+    res.send('Error, user ID or date missing or invalid');
+  }
 };
 
 export const getCardsForUser = (req, res) => {
