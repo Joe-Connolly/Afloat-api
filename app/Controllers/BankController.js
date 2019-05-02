@@ -3,7 +3,7 @@ import dwolla from 'dwolla-v2';
 import dateFormat from 'dateformat';
 import User from '../Models/UserModel';
 import Transfer from '../Models/TransactionModel';
-
+import * as iconController from './IconController';
 
 const plaidClientId = '5ca67be24a965e00118c857b';
 const plaidSecret = 'f19c9bfdf87541cf00b69428ea2113';
@@ -238,11 +238,58 @@ export const getTransactions = (req, res) => {
         res.status(422).send({ err });
       }
       const plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
-      plaidClient.getTransactions(user.accessToken, '2019-01-01', '2019-04-13').then((resAccess) => {
+      plaidClient.getTransactions(user.accessToken, '2019-03-01', '2019-04-13').then(async (resAccess) => {
+        const { transactions } = resAccess;
+        const transactionsWithIcons = await Promise.all(transactions.map(async (transaction) => {
+          const { name, category } = transaction;
+          const icon = await iconController.getIcon(name);
+
+          // No result
+          if (icon.length === 0) {
+            const uri = getCategoryIcon(category);
+            transaction.uri = uri;
+
+            // TODO: Start async process to fetch icon uri for name
+          }
+          else {
+            // TODO: Return fetched URI
+          }
+
+          return transaction;
+        }));
+        resAccess.transactions = transactionsWithIcons;
         res.send(resAccess);
       }).catch((error) => { console.log(error); });
     },
   );
+};
+
+const getCategoryIcon = (cat) => {
+  // console.log(cat);
+  // console.log();
+  const catgeoryUris = {
+    'Food and Drink': 'https://img.icons8.com/windows/96/000000/food.png',
+    Travel: 'https://img.icons8.com/ios-glyphs/90/000000/cab-left.png',
+    Shops: 'https://img.icons8.com/material-outlined/96/000000/shop-department.png',
+    'Airlines and Aviation Services': 'https://img.icons8.com/windows/96/000000/airport.png',
+    Bicycles: 'https://img.icons8.com/windows/96/000000/bicycle.png',
+    'Gyms and Fitness Centers': 'https://img.icons8.com/ios/100/000000/dumbbell-filled.png',
+    'Coffee Shop': 'https://img.icons8.com/material-outlined/96/000000/cafe.png',
+    Payroll: 'https://img.icons8.com/color/96/000000/bank.png',
+    Transfer: 'https://img.icons8.com/ios-glyphs/90/000000/museum.png',
+
+  };
+
+  /*eslint-disable */
+  for (const category of cat.reverse()) {
+    if (Object.keys(catgeoryUris).indexOf(category) > -1) {
+      return catgeoryUris[category];
+    }
+  }
+  /* eslint-enable */
+
+  // Default icon
+  return 'https://img.icons8.com/material-outlined/96/000000/invoice.png';
 };
 
 
