@@ -29,7 +29,6 @@ export const signup = (req, res) => {
       console.log('Failed to register');
       res.status(500).json({ error: 'email already exists' });
     } else {
-      console.log(newUser);
       res.json({ user: newUser.toAuthJSON() });
     }
   });
