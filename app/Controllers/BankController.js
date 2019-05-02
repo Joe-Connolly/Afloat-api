@@ -112,7 +112,7 @@ export const transferAchToUser = (req, res) => {
             },
             amount: {
               currency: 'USD',
-              value: '100.00',
+              value: req.body.amount,
             },
             metadata: {
               paymentId: '12345678',
@@ -145,9 +145,15 @@ export const transferAchToUser = (req, res) => {
                 console.log(prod);
               });
 
-              console.log('created successfully');
-              console.log(res3.headers.get('location'));
-              res.send({ amount: req.body.amount });
+              user.outstandingBalance = req.body.amount;
+              user.save((e, prod) => {
+                if (e) {
+                  console.error(e);
+                }
+                console.log('created successfully');
+                console.log(res3.headers.get('location'));
+                res.send({ amount: req.body.amount });
+              });
             });
         });
     },
@@ -296,7 +302,7 @@ export const getTransactions = (req, res) => {
           if (icon.length === 0) {
             const uri = getCategoryIcon(category);
             transactionCopy.uri = uri;
-            asyncFetchIcon(transaction.name);
+            // asyncFetchIcon(transaction.name);
           } else {
             transactionCopy.uri = icon[0].uri;
           }
@@ -379,6 +385,23 @@ export const getBalanceRange = (req, res) => {
   } else {
     res.send('Error, user ID or date missing or invalid');
   }
+};
+
+export const getBalance = (req, res) => {
+  User.findById(
+    req.user.id,
+    (err, user) => {
+      if (err) {
+        res.status(422).send({ err });
+      }
+      const plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
+      plaidClient.getBalance(user.accessToken).then((resAccess) => {
+        console.log(resAccess.accounts[0].balances.current);
+        console.log('reached');
+        res.status(200).send({ balance: resAccess.accounts[0].balances.current });
+      }).catch((error) => { console.log(error); });
+    },
+  );
 };
 
 export const getCardsForUser = (req, res) => {
