@@ -83,7 +83,7 @@ export const signin = (req, res, next) => {
 export const getUser = (req, res) => {
   console.log(req.user);
   User.findById(req.user.id).then((user) => {
-    res.json({ user });
+    res.json({ user: user.toAuthJSON() });
   }).catch((error) => {
     res.status(500).send({ error });
   });
