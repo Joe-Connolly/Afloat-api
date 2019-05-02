@@ -302,7 +302,7 @@ export const getTransactions = (req, res) => {
           if (icon.length === 0) {
             const uri = getCategoryIcon(category);
             transactionCopy.uri = uri;
-            asyncFetchIcon(transaction.name);
+            // asyncFetchIcon(transaction.name);
           } else {
             transactionCopy.uri = icon[0].uri;
           }
