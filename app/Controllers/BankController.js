@@ -2,10 +2,12 @@ import mongoose from 'mongoose';
 import plaid from 'plaid';
 import dwolla from 'dwolla-v2';
 import date from 'datejs';
-
-
+import fetchFavicon from '@meltwater/fetch-favicon';
+import google from 'google';
+import dateFormat from 'dateformat';
 import User from '../Models/UserModel';
 import Transfer from '../Models/TransactionModel';
+
 
 const plaidClientId = '5ca67be24a965e00118c857b';
 const plaidSecret = 'f19c9bfdf87541cf00b69428ea2113';
@@ -232,7 +234,7 @@ export const enrollSubscription = (req, res) => {
   );
 };
 
-export const getTransactions = (req, res) => {
+export const getTransactions = async (req, res) => {
   User.findById(
     req.user.id,
     (err, user) => {
@@ -240,11 +242,103 @@ export const getTransactions = (req, res) => {
         res.status(422).send({ err });
       }
       const plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
-      plaidClient.getTransactions(user.accessToken, '2019-01-01', '2019-04-13').then((resAccess) => {
-        res.send(resAccess);
+      plaidClient.getTransactions(user.accessToken, '2019-01-01', '2019-04-13').then(async (resAccess) => {
+        // console.log(resAccess.transactions);
+        const promises = [];
+        for (const t of resAccess.transactions) {
+          promises.push(new Promise(async (resolve) => {
+            const trans = t;
+            google.resultsPerPage = 1;
+            await google('amazon', async (err, googleRes) => {
+              if (err) console.error(err);
+              if (googleRes.links && googleRes.links[0] && googleRes.links[0].link) {
+                const firstResult = googleRes.links[0].link;
+                await fetchFavicon(firstResult).then((r) => {
+                  trans.iconURL = r;
+                  resolve(trans);
+                });
+              }
+            });
+          }));
+        }
+
+        Promise.all(promises).then((test) => {
+          console.log(test);
+          res.send(test);
+        });
+
+        // const resWithIcons = await resAccess.transactions.map(async (transaction) => {
+        //   const t = transaction;
+        // google.resultsPerPage = 1;
+
+        // await google('amazon', async (err, googleRes) => {
+        //   if (err) console.error(err);
+        //   console.log('yo yo ytest test');
+        //   console.log(googleRes);
+        //   const firstResult = googleRes.links[0].link;
+        //   await fetchFavicon(firstResult).then((r) => {
+        //     console.log('Y(O YO YO ');
+        //     t.iconURL = r.data;
+        //   });
+        // });
+
+        //   return t;
+        // });
+        // // console.log(`withIcons: ${JSON.stringify(resWithIcons)}`);
+        // console.log('sending response');
+        // res.send(resWithIcons);
       }).catch((error) => { console.log(error); });
     },
   );
+};
+
+export const getBalanceRange = (req, res) => {
+  // Get and check request
+  const { body, user } = req;
+  if (body && body.date && user && user.id) {
+    // Consts and variables
+    const startDate = new Date(body.date);
+    const today = new Date();
+    const endDateString = dateFormat(today, 'yyyy-mm-dd');
+    const startDateString = dateFormat(startDate, 'yyyy-mm-dd');
+    let plaidClient;
+    let totalBalance = 0;
+
+
+    // TODO: We need to persist which accounts are tracked by the app
+    const balanceAccounts = ['checking', 'savings'];
+
+    User.findById(
+      user.id,
+      (err, userObj) => {
+        if (err) {
+          res.status(422).send({ err });
+        }
+
+        // Build Plaid Client
+        plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
+
+        // Get total balance for user
+        plaidClient.getBalance(userObj.accessToken, (err, balances) => {
+          if (err) {
+            res.send('Error getting balance');
+          }
+          balances.accounts.forEach((val) => {
+            if (balanceAccounts.indexOf(val.subtype) > -1) {
+              totalBalance += val.balances.current;
+            }
+          });
+
+          // Get all transactions for user
+          plaidClient.getTransactions(userObj.accessToken, startDateString, endDateString).then(async (transactions) => {
+            res.send(transactions);
+          }).catch((error) => { console.log(error); });
+        });
+      },
+    );
+  } else {
+    res.send('Error, user ID or date missing or invalid');
+  }
 };
 
 export const getCardsForUser = (req, res) => {
