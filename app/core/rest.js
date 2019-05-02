@@ -9,6 +9,7 @@ import { updateOnPRClose } from '../Controllers/GitWebhookController';
 
 const router = Router();
 
+
 router.get('/', (req, res) => {
   res.send('Hello, world!');
 });
@@ -36,11 +37,14 @@ router.get('/getCards', auth.required, CreditCardController.getCardsForUser);
 // Bank Account Headless Browser routes
 // router.post('/addBank', auth.required, HeadlessController.addBankForUser);
 
-router.post('/addBank', auth.required, BankController.addBank);
+// Bank account routes
 router.get('/getTransactions', auth.required, BankController.getTransactions);
+router.post('/addBank', auth.required, BankController.addBank);
 router.post('/transferToUser', auth.required, BankController.transferAchToUser);
 router.post('/enrollSubscription', auth.required, BankController.enrollSubscription);
+router.post('/getBalanceRange', auth.required, BankController.getBalanceRange);
 router.get('/getBalance', auth.required, BankController.getBalance);
+
 
 // -----> Example protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {
