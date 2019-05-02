@@ -44,19 +44,6 @@ router.post('/transferToUser', auth.required, BankController.transferAchToUser);
 router.post('/enrollSubscription', auth.required, BankController.enrollSubscription);
 router.post('/getBalanceRange', auth.required, BankController.getBalanceRange);
 
-router.get('/getIconForTransaction/:name', auth.optional, (req, res) => {
-  google.resultsPerPage = 1;
-
-  google(req.params.name, (err, googleRes) => {
-    if (err) console.error(err);
-    const firstResult = googleRes.links[0].link;
-    const favicon = fetchFavicon(firstResult).then((r) => {
-      console.log('hello world!');
-      res.send(r);
-    });
-  });
-});
-
 // -----> Example protected route
 router.get('/testProtectedRoute', auth.required, (req, res) => {
   // We can use these to query the DB for records for a user
