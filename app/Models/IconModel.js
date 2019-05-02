@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 // Base credit card schema
 const IconSchema = new Schema({
-  key: String,
+  name: { type: String, unique: true },
   uri: String,
 });
 
