@@ -112,7 +112,7 @@ export const transferAchToUser = (req, res) => {
             },
             amount: {
               currency: 'USD',
-              value: '100.00',
+              value: req.body.amount,
             },
             metadata: {
               paymentId: '12345678',
@@ -145,9 +145,15 @@ export const transferAchToUser = (req, res) => {
                 console.log(prod);
               });
 
-              console.log('created successfully');
-              console.log(res3.headers.get('location'));
-              res.send({ amount: req.body.amount });
+              user.outstandingBalance = req.body.amount;
+              user.save((e, prod) => {
+                if (e) {
+                  console.error(e);
+                }
+                console.log('created successfully');
+                console.log(res3.headers.get('location'));
+                res.send({ amount: req.body.amount });
+              });
             });
         });
     },
@@ -242,6 +248,23 @@ export const getTransactions = (req, res) => {
       const plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
       plaidClient.getTransactions(user.accessToken, '2019-01-01', '2019-04-13').then((resAccess) => {
         res.send(resAccess);
+      }).catch((error) => { console.log(error); });
+    },
+  );
+};
+
+export const getBalance = (req, res) => {
+  User.findById(
+    req.user.id,
+    (err, user) => {
+      if (err) {
+        res.status(422).send({ err });
+      }
+      const plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
+      plaidClient.getBalance(user.accessToken).then((resAccess) => {
+        console.log(resAccess.accounts[0].balances.current);
+        console.log('reached');
+        res.status(200).send({ balance: resAccess.accounts[0].balances.current });
       }).catch((error) => { console.log(error); });
     },
   );
