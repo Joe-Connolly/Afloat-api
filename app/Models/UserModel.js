@@ -21,10 +21,10 @@ const UserSchema = new Schema({
   accountId: String,
   customerUrl: String,
   accountUrl: String,
-  active: Boolean,
+  active: { type: Boolean, default: false },
   activeUntil: { type: Date },
   subscriptionEnrolled: Boolean,
-  outstandingBalance: Number,
+  outstandingBalance: { type: Number, default: 0 },
 });
 
 UserSchema.set('toJSON', {
