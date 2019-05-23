@@ -3,7 +3,10 @@ import dwolla from 'dwolla-v2';
 import dateFormat from 'dateformat';
 import fetchFavicon from '@meltwater/fetch-favicon';
 import google from 'google';
+<<<<<<< HEAD
 import date from 'datejs';
+=======
+>>>>>>> 2e96f361effd1b3cb37ecb5398732772c083da03
 import User from '../Models/UserModel';
 import Transfer from '../Models/TransactionModel';
 import * as iconController from './IconController';
@@ -434,7 +437,8 @@ export const getBalanceRange = (req, res) => {
     let totalBalance = 0;
     const cashFlowDaily = {};
     const cashFlowDailyList = [];
-
+    const outwardCashFlowDaily = {};
+    const outwardCashFlowDailyList = [];
 
     // TODO: We need to persist which accounts are tracked by the app
     const balanceAccounts = ['checking', 'savings'];
@@ -470,6 +474,17 @@ export const getBalanceRange = (req, res) => {
             }
           });
 
+          // Calculate outward cashflow per day
+          transactions.forEach((val) => {
+            if (val.amount > 0) {
+              if (outwardCashFlowDaily[val.date]) {
+                outwardCashFlowDaily[val.date] += val.amount;
+              } else {
+                outwardCashFlowDaily[val.date] = val.amount;
+              }
+            }
+          });
+
           // Convert cash flow objs to a sorted list of objects
           Object.keys(cashFlowDaily).forEach((key) => {
             cashFlowDailyList.push({ date: key, balance: cashFlowDaily[key] });
@@ -479,7 +494,7 @@ export const getBalanceRange = (req, res) => {
           // Update balances per day with actual balance
           const balancePerDay = cashFlowDailyList.map((val) => {
             totalBalance += val.balance;
-            return { date: val.date, startBalance: totalBalance, flow: val.balance, endBalance: totalBalance - val.balance };
+            return { date: val.date, startBalance: totalBalance, flow: val.balance, endBalance: totalBalance - val.balance, outwardCashFlow: outwardCashFlowDaily[val.date] };
           });
 
           res.send(balancePerDay);

@@ -78,8 +78,14 @@ UserSchema.methods.toAuthJSON = function toAuthJSON() {
     email: this.email,
     token: this.generateJWT(),
     firstname: this.firstname,
+    lastname: this.lastname,
     bankSet: this.bankSet,
     bankStaging: this.bankStaging,
+    emailVerified: false,
+    active: this.active,
+    outstandingBalance: this.outstandingBalance,
+    subscriptionEnrolled: this.subscriptionEnrolled,
+
   };
 };
 
