@@ -3,7 +3,7 @@ import dwolla from 'dwolla-v2';
 import dateFormat from 'dateformat';
 import fetchFavicon from '@meltwater/fetch-favicon';
 import google from 'google';
-import Date from 'datejs';
+import date from 'datejs';
 import User from '../Models/UserModel';
 import Transfer from '../Models/TransactionModel';
 import * as iconController from './IconController';
@@ -22,6 +22,13 @@ export const addBank = (req, res) => {
       if (err) {
         res.status(422).send({ err });
       }
+
+      user.bankStaging = true;
+      user.save((e) => {
+        if (e) {
+          console.error('ERROR!');
+        }
+      });
 
       const plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
       // console.log(req.body.publicToken);
@@ -54,7 +61,7 @@ export const addBank = (req, res) => {
                   const customerUrl = createCustomerResponse.headers.get('location');
                   user.customerUrl = customerUrl;
 
-                  plaidClient.createProcessorToken(user.accessToken, user.accountId,
+                  plaidClient.createProcessorToken(response.access_token, user.accountId,
                     'dwolla', (err2, res2) => {
                       const processorToken = res2.processor_token;
                       const requestBodyFunding = {
@@ -69,10 +76,11 @@ export const addBank = (req, res) => {
                           user.save((e) => {
                             if (e) {
                               console.error('ERROR!');
+                            } else {
+                              console.log(user);
+                              res.status(200);
                             }
                           });
-                          console.log(user);
-                          res.status(200);
                         });
                     });
                 }, (err3) => { console.log(err3); });
@@ -154,6 +162,83 @@ export const transferAchToUser = (req, res) => {
                 console.log('created successfully');
                 console.log(res3.headers.get('location'));
                 res.send({ amount: req.body.amount });
+              });
+            });
+        });
+    },
+  );
+};
+
+export const transferAchFromUser = (req, res) => {
+  User.findById(
+    req.user.id,
+    (err, user) => {
+      if (err) {
+        res.status(422).send({ err });
+      }
+
+      const client = new dwolla.Client({
+        key: dwallaPublic,
+        secret: dwallaKey,
+        environment: 'sandbox',
+      });
+
+      client.auth.client()
+        .then((appToken) => {
+          console.log(user);
+          const requestBody = {
+            _links: {
+              destination: {
+                href: 'https://api-sandbox.dwolla.com/funding-sources/59e9024d-b406-4a48-9c9a-7d019a7d242a',
+              },
+              source: {
+                href: user.accountUrl,
+              },
+            },
+            amount: {
+              currency: 'USD',
+              value: user.outstandingBalance,
+            },
+            metadata: {
+              paymentId: '12345678',
+              note: 'test payment',
+            },
+            clearing: {
+              destination: 'next-available',
+              source: 'standard',
+            },
+            correlationId: '8a2cdc8d-629d-4a24-98ac-40b735229fe2',
+          };
+
+          appToken
+            .post('transfers', requestBody)
+            .then((res3) => {
+              const transfer = res3.headers.get('location');
+
+              const newTransfer = new Transfer();
+              newTransfer.user = req.user.id;
+              newTransfer.transactionId = transfer;
+              newTransfer.amount = user.outstandingBalance;
+              newTransfer.incoming = true;
+              newTransfer.type = 'LOAN_REPAYMENT';
+              newTransfer.status = 'PROCESSING';
+              console.log(newTransfer);
+              newTransfer.save((e, prod) => {
+                if (e) {
+                  console.error(e);
+                }
+                console.log(prod);
+              });
+
+              user.outstandingBalance = 0;
+              user.balanceActiveUntil = undefined;
+              user.save((e, prod) => {
+                if (e) {
+                  console.error(e);
+                }
+                console.log('created successfully');
+                console.log(res3.headers.get('location'));
+                res.status(200).send();
               });
             });
         });
@@ -284,7 +369,11 @@ const getCategoryIcon = (cat) => {
   return 'https://img.icons8.com/material-outlined/96/000000/invoice.png';
 };
 
-export const getTransactions = (req, res) => {
+const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+
+export const getTransactions = (req, res, attempt) => {
+  const attemptNum = typeof attempt !== 'number' ? 1 : attempt;
+
   User.findById(
     req.user.id,
     (err, user) => {
@@ -292,28 +381,42 @@ export const getTransactions = (req, res) => {
         res.status(422).send({ err });
       }
       const plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
-      plaidClient.getTransactions(user.accessToken, '2019-01-01', '2019-05-01').then(async (resAccess) => {
-        const { transactions } = resAccess;
-        const transactionsWithIcons = await Promise.all(transactions.map(async (transaction) => {
-          const { name, category } = transaction;
-          const icon = await iconController.getIcon(name);
-          const transactionCopy = transaction;
-
-          // No result
-          if (icon.length === 0) {
-            const uri = getCategoryIcon(category);
-            transactionCopy.uri = uri;
-            // asyncFetchIcon(transaction.name);
+      const today = new Date();
+      const endDateString = dateFormat(today, 'yyyy-mm-dd');
+      plaidClient.getTransactions(user.accessToken, '2019-01-01', endDateString)
+        .catch((error) => {
+          if (attemptNum < 10) {
+            sleep(500).then(() => {
+              getTransactions(req, res, attemptNum + 1);
+              Error('access token not found');
+            });
           } else {
-            transactionCopy.uri = icon[0].uri;
+            res.status(422).send();
           }
+          console.log(error);
+        })
+        .then(async (resAccess) => {
+          const { transactions } = resAccess;
+          const transactionsWithIcons = await Promise.all(transactions.map(async (transaction) => {
+            const { name, category } = transaction;
+            const icon = await iconController.getIcon(name);
+            const transactionCopy = transaction;
 
-          return transactionCopy;
-        }));
-        const resCopy = resAccess;
-        resCopy.transactions = transactionsWithIcons;
-        res.send(resCopy);
-      }).catch((error) => { console.log(error); });
+            // No result
+            if (icon.length === 0) {
+              const uri = getCategoryIcon(category);
+              transactionCopy.uri = uri;
+            // asyncFetchIcon(transaction.name);
+            } else {
+              transactionCopy.uri = icon[0].uri;
+            }
+
+            return transactionCopy;
+          }));
+          const resCopy = resAccess;
+          resCopy.transactions = transactionsWithIcons;
+          res.send(resCopy);
+        });
     },
   );
 };
@@ -388,21 +491,13 @@ export const getBalanceRange = (req, res) => {
   }
 };
 
-export const getBalance = (req, res) => {
-  User.findById(
-    req.user.id,
-    (err, user) => {
-      if (err) {
-        res.status(422).send({ err });
-      }
-      const plaidClient = new plaid.Client(plaidClientId, plaidSecret, plaidPublic, plaid.environments.sandbox);
-      plaidClient.getBalance(user.accessToken).then((resAccess) => {
-        console.log(resAccess.accounts[0].balances.current);
-        console.log('reached');
-        res.status(200).send({ balance: resAccess.accounts[0].balances.current });
-      }).catch((error) => { console.log(error); });
-    },
-  );
+export const getLoanHistory = (req, res) => {
+  console.log(req.user.id);
+  Transfer.find({ user: req.user.id, type: { $ne: 'SUBSCRIPTION' } }, (err, docs) => {
+    console.log('reached till here');
+    console.log(docs);
+    res.send(docs);
+  }).catch((err) => { res.status(500).send({ err }); });
 };
 
 export const getCardsForUser = (req, res) => {
