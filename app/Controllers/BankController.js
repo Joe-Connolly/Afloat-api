@@ -3,10 +3,7 @@ import dwolla from 'dwolla-v2';
 import dateFormat from 'dateformat';
 import fetchFavicon from '@meltwater/fetch-favicon';
 import google from 'google';
-<<<<<<< HEAD
 import date from 'datejs';
-=======
->>>>>>> 2e96f361effd1b3cb37ecb5398732772c083da03
 import User from '../Models/UserModel';
 import Transfer from '../Models/TransactionModel';
 import * as iconController from './IconController';
