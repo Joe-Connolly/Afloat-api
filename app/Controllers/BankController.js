@@ -331,6 +331,7 @@ export const getBalanceRange = (req, res) => {
     const cashFlowDaily = {};
     const cashFlowDailyList = [];
     const outwardCashFlowDaily = {};
+    const inwardCashFlowDaily = {};
     const outwardCashFlowDailyList = [];
 
     // TODO: We need to persist which accounts are tracked by the app
@@ -375,6 +376,10 @@ export const getBalanceRange = (req, res) => {
               } else {
                 outwardCashFlowDaily[val.date] = val.amount;
               }
+            } else if (inwardCashFlowDaily[val.date]) {
+              inwardCashFlowDaily[val.date] -= val.amount;
+            } else {
+              inwardCashFlowDaily[val.date] = val.amount * -1;
             }
           });
 
@@ -387,8 +392,9 @@ export const getBalanceRange = (req, res) => {
           // Update balances per day with actual balance
           const balancePerDay = cashFlowDailyList.map((val) => {
             totalBalance += val.balance;
-            return { date: val.date, startBalance: totalBalance, flow: val.balance, endBalance: totalBalance - val.balance, outwardCashFlow: outwardCashFlowDaily[val.date] };
+            return { date: val.date, startBalance: totalBalance, flow: val.balance, endBalance: totalBalance - val.balance, outwardCashFlow: outwardCashFlowDaily[val.date], inwardCashFlow: inwardCashFlowDaily[val.date] };
           });
+
 
           res.send(balancePerDay);
         }).catch((error) => { console.log(error); });
