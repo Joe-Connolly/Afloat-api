@@ -43,7 +43,8 @@ router.post('/addBank', auth.required, BankController.addBank);
 router.post('/transferToUser', auth.required, BankController.transferAchToUser);
 router.post('/enrollSubscription', auth.required, BankController.enrollSubscription);
 router.post('/getBalanceRange', auth.required, BankController.getBalanceRange);
-router.get('/getBalance', auth.required, BankController.getBalance);
+router.get('/getLoanHistory', auth.required, BankController.getLoanHistory);
+router.post('/transferToApp', auth.required, BankController.transferAchFromUser);
 
 
 // -----> Example protected route

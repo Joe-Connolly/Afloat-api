@@ -15,6 +15,7 @@ const UserSchema = new Schema({
   transactions: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],
   verified: Boolean,
   bankSet: { type: Boolean, default: false },
+  bankStaging: { type: Boolean, default: false },
   publicToken: String,
   accessToken: String,
   itemId: String,
@@ -25,6 +26,8 @@ const UserSchema = new Schema({
   activeUntil: { type: Date },
   subscriptionEnrolled: Boolean,
   outstandingBalance: { type: Number, default: 0 },
+  balanceActiveUntil: { type: Date },
+
 });
 
 UserSchema.set('toJSON', {
@@ -75,7 +78,14 @@ UserSchema.methods.toAuthJSON = function toAuthJSON() {
     email: this.email,
     token: this.generateJWT(),
     firstname: this.firstname,
+    lastname: this.lastname,
     bankSet: this.bankSet,
+    bankStaging: this.bankStaging,
+    emailVerified: false,
+    active: this.active,
+    outstandingBalance: this.outstandingBalance,
+    subscriptionEnrolled: this.subscriptionEnrolled,
+
   };
 };
 
