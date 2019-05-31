@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import passport from '../core/passport';
 import User from '../Models/UserModel';
 
@@ -87,34 +86,5 @@ export const getUser = (req, res) => {
     res.json({ user: user.toAuthJSON() });
   }).catch((error) => {
     res.status(500).send({ error });
-  });
-};
-
-export const updateEmail = (req, res) => {
-  const user = req.body;
-
-  // Validate fields were added
-  if (!user.email) {
-    return res.status(422).json({
-      errors: {
-        email: 'Error, email is required',
-      },
-    });
-  }
-
-  // Find user and update email
-  User.findById(req.user.id).then((resultUser) => {
-    resultUser.email = user.email;
-    return resultUser.save((err) => {
-      if (err) {
-        console.log('Failed to update email');
-        res.status(500).json({ error: err });
-      } else {
-        res.json({ user: resultUser.toAuthJSON() });
-      }
-    });
-  }).catch((error) => {
-    console.log(error);
-    res.status(500).json({ error });
   });
 };

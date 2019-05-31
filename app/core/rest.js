@@ -21,9 +21,7 @@ router.post('/getGitUpdate', updateOnPRClose);
 // Login routes
 router.post('/signup', auth.optional, UserController.signup);
 router.post('/signin', auth.optional, UserController.signin);
-router.post('/updateEmail', auth.required, UserController.updateEmail);
 router.get('/getUser', auth.required, UserController.getUser);
-
 
 // Transaction routes
 router.post('/createTransaction', auth.required, TransactionController.createTransaction);
