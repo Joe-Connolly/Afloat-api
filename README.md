@@ -1,6 +1,6 @@
-# Cash Advance Service Backend
+# Afloat Backend
 
-Backend for credit card cash advance service application. Please see front end repo: https://github.com/dartmouth-cs98/19w-quantweb for detailed README.
+Backend for an app for providing payday cash advances to American workers. Visit [here](https://github.com/dartmouth-cs98/19w-quantweb-backend) for the frontend.
 
 ## Architecture
 
@@ -10,46 +10,34 @@ We use [passport.js](http://www.passportjs.org/) for authentication.
 
 We use [mongoose](https://mongoosejs.com/) for interfacing with [mLab](https://mlab.com/welcome/)
 
-We use the [cluster](https://nodejs.org/api/cluster.html) module of Node.js to distribute our server over multicore hosts.
+We use the [PLAID](https://plaid.com/) API for linking a users bank account.
+
+We use the [Dwolla](https://www.dwolla.com/) API for transfering money to and from a users bank account.
+
+We use the [SendGrid](https://sendgrid.com/) API for sending emails to users
 
 We use [GitHub webhooks](https://developer.github.com/webhooks/) to automatically update the server when a PR is closed on master
 
 We host on [AWS](https://aws.amazon.com), using a free-tier, single-core EC2 AMI instance.
 
 Our api can be found at:
-> http://ec2-54-212-62-214.us-west-2.compute.amazonaws.com/api/
+> http://ec2-54-212-62-214.us-west-2.compute.amazonaws.com/api/ or https://quantwebdev.me
 
+We use the [cluster](https://nodejs.org/api/cluster.html) module of Node.js to distribute our server over multicore hosts.
 ## Setup
 
-Clone the repository and navigate to its root folder. The backend is written in node. 
-
-## Deployment
-Navigate to the root folder of the repo and type:
-````Bash
-# Ensure your dependencies are up to date
-yarn install
-
-# To run development mode
-npm start
-
-# To build for production
-npm run build
-
-# To run for production
-npm run prod
+1) Clone the repo
+2) Navigate to the repo's root folder. 
+3) Run the following commands:
 ````
+# run mongodb if necessary
+brew services start mongodb
+# install depencies
+yarn
+# run the app
+yarn start
 
-To access EC2 (not necessary to run application in development mode), get the ```.pem``` file from a team member (or slack), then:
-```Bash
-# Login to the machine
-ssh -i "quantweb.pem" ec2-user@ec2-54-212-62-214.us-west-2.compute.amazonaws.com
-
-# Enter server dir
-cd 19w-quantweb-backend
-
-# To update the server manually
-./restartServer
-```
+````
 
 ## Authors
 
