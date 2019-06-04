@@ -44,11 +44,11 @@ Navigate to the root folder of the repo and type:
 # Ensure your dependencies are up to date
 yarn install
 # To run development mode
-npm start
+yarn start
 # To build for production
-npm run build
+yarn run build
 # To run for production
-npm run prod
+yarn run prod
 ````
 
 ## Branches
