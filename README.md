@@ -29,7 +29,7 @@ We use the [cluster](https://nodejs.org/api/cluster.html) module of Node.js to d
 1) Clone the repo
 2) Navigate to the repo's root folder. 
 3) Run the following commands:
-````
+````Bash
 # run mongodb if necessary
 brew services start mongodb
 # install depencies
@@ -42,9 +42,7 @@ yarn start
 Navigate to the root folder of the repo and type:
 ````Bash
 # Ensure your dependencies are up to date
-yarn install
-# To run development mode
-yarn start
+yarn
 # To build for production
 yarn run build
 # To run for production
