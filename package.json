@@ -43,7 +43,7 @@
   "homepage": "https://github.com/dartmouth-cs98/19w-quantweb-backend#readme",
   "dependencies": {
     "@meltwater/fetch-favicon": "^1.0.4",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "bcrypt": "^3.0.3",
     "chalk": "^2.4.2",
     "compression": "^1.7.3",
