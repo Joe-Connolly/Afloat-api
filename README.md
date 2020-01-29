@@ -1,6 +1,6 @@
 # Afloat Backend
 
-Backend for an app for providing payday cash advances to American workers. Visit [here](https://github.com/dartmouth-cs98/19w-quantweb-backend) for the frontend.
+Node / Mongo backend for an app for providing payday cash advances to American workers. Visit [here](https://github.com/Joe-Connolly/Afloat) for the frontend.
 
 ## Architecture
 
