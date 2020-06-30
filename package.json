@@ -53,7 +53,7 @@
     "datejs": "^1.0.0-rc3",
     "dwolla-v2": "^2.0.1",
     "express": "^4.16.4",
-    "express-jwt": "^5.3.1",
+    "express-jwt": "^6.0.0",
     "express-session": "^1.15.6",
     "forever": "^0.15.3",
     "google": "^2.1.0",
